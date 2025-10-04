@@ -1,1 +1,1 @@
-# 2025-3e-Virtu-ln-Bankovnictv-
+# 2025-3e-VirtuálníBankovnictví
