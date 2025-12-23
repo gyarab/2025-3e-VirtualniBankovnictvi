@@ -1,6 +1,8 @@
-package cz.gyarabProject.api;
+package cz.gyarabProject.api.adaa;
 
 import Decryption.ResponseDecryption;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.gyarabProject.api.datatype.ClientInfo;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -56,7 +58,7 @@ public class Registration {
                 props.getProperty("application.name.en"),
                 props.getProperty("application.type"),
                 fromStringToArray(props.getProperty("redirect.uri"), separator),
-                fromStringToArray(props.getProperty("api.scopes"), separator),
+                fromStringToArray(props.getProperty("scopes"), separator),
                 jwt,
                 encryptionKey
         );
@@ -76,11 +78,11 @@ public class Registration {
      * @return JSON like {@link String} which is crypted in {@code cipherText}.
      * @throws IOException when {@code cipherText} is invalid JSON or cannot be decrypted by iv and key.
      */
-    public String decryptResponse(String cipherText, String iv, String key) throws IOException {
+    public ClientInfo decryptResponse(String cipherText, String iv, String key) throws IOException {
         if (isNullOrEmpty(key)) {
             key = readValidFile(getAbsolutePath(props, "key-token.path", "api-key.path"));
             key = new String(encodeBase64(key));
         }
-        return ResponseDecryption.decrypt(cipherText, iv, key);
+        return new ObjectMapper().readValue(ResponseDecryption.decrypt(cipherText, iv, key), ClientInfo.class);
     }
 }

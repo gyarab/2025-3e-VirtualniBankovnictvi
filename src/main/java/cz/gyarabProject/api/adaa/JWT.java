@@ -1,4 +1,4 @@
-package cz.gyarabProject.api;
+package cz.gyarabProject.api.adaa;
 
 import java.io.IOException;
 import java.net.URI;
@@ -20,24 +20,24 @@ public class JWT {
     }
 
     public void createNewTlsAuthentication() throws IOException, InterruptedException {
-        HttpRequest.Builder request = HttpRequest.newBuilder()
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(props.getProperty("sandbox.uri")));
 
-        request.header("x-correlation-id", props.getProperty("header.value.x-correlation-id"));
-        request.header("apiKey", getKey());
-        request.header("Content-Type", props.getProperty("header.value.content-type"));
+        builder.header("x-correlation-id", props.getProperty("header.value.x-correlation-id"));
+        builder.header("apiKey", getKey());
+        builder.header("Content-Type", "application/json");
 
-        request.POST(HttpRequest.BodyPublishers.ofString(getBodyJson()));
+        builder.POST(HttpRequest.BodyPublishers.ofString(getBodyJson()));
         HttpResponse<String> response = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(20))
                 .build()
-                .send(request.build(), HttpResponse.BodyHandlers.ofString());
+                .send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
         createAndWriteFile(getAbsolutePath(props, "key-token.path", "jwt.path"), response.body());
     }
 
     private String getKey() throws IOException {
-        return readValidFile(getAbsolutePath(props, "key-token.path", "api-key.path"));
+        return readValidFile(getAbsolutePath(props, "key-token.path", "key.path"));
     }
 
     private String getBodyJson() throws IOException {

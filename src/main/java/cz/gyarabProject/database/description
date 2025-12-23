@@ -1,0 +1,41 @@
+We are using JPA and Hibenate logic which create SQL commands and the program is written in objects (not in SQL commands).
+
+Entity layer
+- declare DB tables
+- NO LOGIC
+
+Repository layer
+- connection between DB and app
+- Load, Save and Delete entities
+- still NO LOGIC
+- uses JPA which creates SQL commands under methods
+- for complex SQL needed is using JPQL (modified SQL)
+- ONLY CRUD
+
+Service layer
+- logic of the DB use
+- using dependency injection
+- @Transactional belong here (coordinate multiple DB calls)
+- NO SQL or DB COMUNICATION (no direct comunication)
+
+Runner layer
+- called only when the application starts
+- logic
+
+Logic of layers
+- Runner layer is manipulating Servise layer
+- Service layer is manipulating Repository layer
+- Repository layer is manipulating Entity layer
+
+- Runner -> Service -> Repository -> Entity
+
+Naming conventions
+- in Java is basic naming (camelCase)
+- in DB is snake_case
+- in DB tables are in plural (only last name like user_accounts)
+
+Spring boot links
+https://docs.spring.io/spring-boot/docs/current/reference/html/ - raw Spring Boot
+https://docs.spring.io/spring-data/jpa/reference/ - Spring Boot JPA
+https://jakarta.ee/specifications/persistence/ - Jakarta persistence (JPA part) (DB interfaces like @Table or @ID)
+https://hibernate.org/orm/documentation/7.2/ - Hibernate docs

@@ -11,7 +11,7 @@ import java.util.Base64;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-class Helper {
+public class Helper {
 
     /**
      * Check if {@code string} is null or empty.

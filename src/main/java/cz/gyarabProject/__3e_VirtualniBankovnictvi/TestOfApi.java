@@ -1,8 +1,13 @@
 package cz.gyarabProject.__3e_VirtualniBankovnictvi;
 
-import cz.gyarabProject.api.JWT;
+import cz.gyarabProject.api.adaa.JWT;
 
-import cz.gyarabProject.api.Registration;
+import cz.gyarabProject.api.adaa.Registration;
+import cz.gyarabProject.api.adaa.Token;
+import cz.gyarabProject.api.datatype.AccessToken;
+import cz.gyarabProject.api.datatype.ClientInfo;
+import cz.gyarabProject.api.datatype.Code;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +21,9 @@ import java.util.Properties;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import static cz.gyarabProject.api.Helper.getAbsolutePath;
+import static cz.gyarabProject.api.Helper.readValidFile;
+
 @RestController
 public class TestOfApi {
     private final String propertiesPath = "./src/main/resources/";
@@ -23,6 +31,8 @@ public class TestOfApi {
     Properties props = new Properties();
     final boolean SANDBOX = true;
     final String encryptionKey = "MnM1djh5L0I/RShIK01iUWVUaFdtWnEzdDZ3OXokQyY=";
+    ClientInfo clientInfo = null;
+    Code code = null;
 
     public TestOfApi() throws IOException {
         props.load(new FileInputStream(propertiesPath + "api.properties"));
@@ -58,8 +68,8 @@ public class TestOfApi {
     @GetMapping(value="/test-of-api/registration")
     public String registration(HttpServletResponse response,
                                @RequestParam(value="salt", required=false, defaultValue="") String salt,
-                               @RequestParam(value="encryptedData", required=false, defaultValue="") String encryptedData )
-    {
+                               @RequestParam(value="encryptedData", required=false, defaultValue="") String encryptedData
+    ) {
         Registration register = new Registration(props);
         try {
             if (salt.isEmpty() || encryptedData.isEmpty()) {
@@ -76,9 +86,39 @@ public class TestOfApi {
                 if (SANDBOX) {
                     key = encryptionKey;
                 }
-                return register.decryptResponse(encryptedData, salt, key);
+                clientInfo = register.decryptResponse(encryptedData, salt, key);
+                return clientInfo.toString();
             }
         } catch (IOException e) {
+            return e.getMessage();
+        }
+        return "";
+    }
+
+    @GetMapping(value="test-of-api/token", produces= MediaType.TEXT_HTML_VALUE)
+    public String token(HttpServletResponse response,
+                        @RequestParam(value="code", required=false, defaultValue="") String code,
+                        @RequestParam(value="state", required=false, defaultValue="") String state
+    ) {
+        if (clientInfo == null) {
+            return "You have to register here: <a href='http://localhost:8080/test-of-api/registration>Register</a>'";
+        }
+        String redirectUrl = "http://localhost:8080/test-of-api/token";
+        Token token = new Token(props);
+        try {
+            if (code.isEmpty()) {
+                response.sendRedirect(token.getCode(clientInfo.id(), redirectUrl));
+            } else if (this.code == null) {
+                this.code = new Code(code, System.currentTimeMillis() / 1000);
+                AccessToken accessToken = token.getRefreshToken(redirectUrl, this.code, clientInfo);
+                return accessToken.toString();
+            } else {
+                AccessToken accessToken = token.getAccessToken(redirectUrl,
+                        readValidFile(getAbsolutePath(props, "key-token.path", "token.refresh.path")),
+                        clientInfo);
+                return accessToken.toString();
+            }
+        } catch (IOException | InterruptedException e) {
             return e.getMessage();
         }
         return "";
