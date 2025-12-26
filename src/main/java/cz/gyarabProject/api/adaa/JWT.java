@@ -1,5 +1,8 @@
 package cz.gyarabProject.api.adaa;
 
+import cz.gyarabProject.api.datatype.Deployment;
+import cz.gyarabProject.api.datatype.KeyHolder;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -13,18 +16,20 @@ import static cz.gyarabProject.api.Helper.*;
 public class JWT {
     private final String separator;
     private final Properties props;
+    private final KeyHolder keyHolder;
 
-    public JWT(Properties props) {
+    public JWT(Properties props, KeyHolder keyHolder) {
         this.props = props;
         this.separator = props.getProperty("array.separator");
+        this.keyHolder = keyHolder;
     }
 
-    public void createNewTlsAuthentication() throws IOException, InterruptedException {
+    public String createNewTlsAuthentication(Deployment deployment) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(props.getProperty("sandbox.uri")));
+                .uri(URI.create(getUri(deployment)));
 
         builder.header("x-correlation-id", props.getProperty("header.value.x-correlation-id"));
-        builder.header("apiKey", getKey());
+        builder.header("apiKey", keyHolder.getApi());
         builder.header("Content-Type", "application/json");
 
         builder.POST(HttpRequest.BodyPublishers.ofString(getBodyJson()));
@@ -33,11 +38,17 @@ public class JWT {
                 .build()
                 .send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
-        createAndWriteFile(getAbsolutePath(props, "key-token.path", "jwt.path"), response.body());
+        return response.body();
     }
 
-    private String getKey() throws IOException {
-        return readValidFile(getAbsolutePath(props, "key-token.path", "key.path"));
+    private String getUri(Deployment deployment) {
+        if (deployment == Deployment.SANDBOX) {
+            return getAbsolutePath(props, "kb.uri.jwt.sanbox");
+        } else if (deployment == Deployment.PRODUCTION) {
+            return getAbsolutePath(props, "kb.uri.jwt.production");
+        } else {
+            throw new IllegalStateException("Unsupported deployment type");
+        }
     }
 
     private String getBodyJson() throws IOException {

@@ -4,9 +4,7 @@ import cz.gyarabProject.api.adaa.JWT;
 
 import cz.gyarabProject.api.adaa.Registration;
 import cz.gyarabProject.api.adaa.Token;
-import cz.gyarabProject.api.datatype.AccessToken;
-import cz.gyarabProject.api.datatype.ClientInfo;
-import cz.gyarabProject.api.datatype.Code;
+import cz.gyarabProject.api.datatype.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Properties;
 
@@ -33,6 +29,7 @@ public class TestOfApi {
     final String encryptionKey = "MnM1djh5L0I/RShIK01iUWVUaFdtWnEzdDZ3OXokQyY=";
     ClientInfo clientInfo = null;
     Code code = null;
+    String jwt = null;
 
     public TestOfApi() throws IOException {
         props.load(new FileInputStream(propertiesPath + "api.properties"));
@@ -43,18 +40,17 @@ public class TestOfApi {
      * Test the {@link JWT} class by trying to generate new token and reading it as result.
      *
      * @return last generated token.
-     * @throws IOException when file with token cannot be read or body of POST request is invalid JSON.
      * @throws InterruptedException when sending request is interrupted.
      */
     @GetMapping(value="/test-of-api/newJWT")
-    public String newJWT() throws IOException, InterruptedException {
+    public String newJWT(KeyHolder keyHolder) throws InterruptedException {
         System.out.println(System.getProperty("user.dir") + " test");
         try {
-            new JWT(props).createNewTlsAuthentication();
+            jwt = new JWT(props, keyHolder).createNewTlsAuthentication(Deployment.SANDBOX);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        return Files.readString(Paths.get("./keys-tokens/" + props.getProperty("jwt.path")));
+        return jwt;
     }
 
     /**
@@ -75,9 +71,9 @@ public class TestOfApi {
             if (salt.isEmpty() || encryptedData.isEmpty()) {
                 String url;
                 if (SANDBOX) {
-                    url = register.getRegistration(encryptionKey);
+                    url = register.getRegistration(encryptionKey, jwt);
                 } else {
-                    url = register.getRegistration("");
+                    url = register.getRegistration("", jwt);
                 }
 
                 response.sendRedirect(url);
@@ -96,7 +92,7 @@ public class TestOfApi {
     }
 
     @GetMapping(value="test-of-api/token", produces= MediaType.TEXT_HTML_VALUE)
-    public String token(HttpServletResponse response,
+    public String token(KeyHolder keyHolder, HttpServletResponse response,
                         @RequestParam(value="code", required=false, defaultValue="") String code,
                         @RequestParam(value="state", required=false, defaultValue="") String state
     ) {
@@ -104,7 +100,7 @@ public class TestOfApi {
             return "You have to register here: <a href='http://localhost:8080/test-of-api/registration>Register</a>'";
         }
         String redirectUrl = "http://localhost:8080/test-of-api/token";
-        Token token = new Token(props);
+        Token token = new Token(props, keyHolder);
         try {
             if (code.isEmpty()) {
                 response.sendRedirect(token.getCode(clientInfo.id(), redirectUrl));

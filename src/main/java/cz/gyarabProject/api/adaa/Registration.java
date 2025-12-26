@@ -25,12 +25,10 @@ public class Registration {
      * @return URL as {@link String}.
      * @throws IOException when {@code registrationRequest} JSON is invalid.
      */
-    public String getRegistration(String encryptionKey) throws IOException {
-        String jwt = readValidFile(getAbsolutePath(props, "key-token.path", "jwt.path"));
-
+    public String getRegistration(String encryptionKey, String jwt) throws IOException {
         String jsonByte64 = new String(Base64.getEncoder().encode(getRequestJson(jwt, encryptionKey).getBytes()));
 
-        return "https://api-gateway.kb.cz/sandbox/client-registration-ui/v2/saml/register?registrationRequest="
+        return getAbsolutePath(props, "kb.uri", "kb.uri.oauth2") + "?registrationRequest="
                 + jsonByte64 + "&state=client123";
     }
 

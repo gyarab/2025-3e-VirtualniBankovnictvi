@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.datatype.AccessToken;
 import cz.gyarabProject.api.datatype.ClientInfo;
 import cz.gyarabProject.api.datatype.Code;
+import cz.gyarabProject.api.datatype.KeyHolder;
 
 import static cz.gyarabProject.api.Helper.*;
 
@@ -19,9 +20,11 @@ import java.util.Properties;
 
 public class Token {
     private final Properties props;
+    private final KeyHolder keyHolder;
 
-    public Token(Properties props) {
+    public Token(Properties props, KeyHolder keyHolder) {
         this.props = props;
+        this.keyHolder = keyHolder;
     }
 
     /**
@@ -30,7 +33,7 @@ public class Token {
      * @return URL for getting a token.
      */
     public String getCode(String clientId, String redirectUrl) {
-        return "https://login.kb.cz/autfe/ssologin?response_type=code&client_id=" + clientId + "&redirect_uri=" +
+        return getAbsolutePath(props, "kb.login.uri") + "?response_type=code&client_id=" + clientId + "&redirect_uri=" +
                 redirectUrl +
                 "&scope=" + props.getProperty("scopes").replace(props.getProperty("array.separator"), "%20");
     }
@@ -65,10 +68,10 @@ public class Token {
     private AccessToken getToken(String redirectUrl, String codeOrToken, ClientInfo client, String grandType)
             throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create("https://api-gateway.kb.cz/oauth2/v3/access_token"));
+                .uri(URI.create(getAbsolutePath(props, "kb.uri", "kb.uri.token")));
 
         builder.header("x-correlation-id", props.getProperty("header.value.x-correlation-id"));
-        builder.header("apiKey", getKey());
+        builder.header("apiKey", keyHolder.getApi());
         builder.header("Content-Type", "application/x-www-form-urlencoded");
 
         builder.POST(getRequestBody(redirectUrl, codeOrToken, client, grandType));
@@ -84,16 +87,6 @@ public class Token {
             createAndWriteFile(getAbsolutePath(props, "key-token.path", "token.refresh.path"), node.get("refresh_token").asText());
         }
         return mapper.treeToValue(node, AccessToken.class);
-    }
-
-    /**
-     * Read and return file with api key.
-     *
-     * @return Api key.
-     * @throws IOException When the file doesn't exist or can't be read.
-     */
-    private String getKey() throws IOException {
-        return readValidFile(getAbsolutePath(props, "key-token.path", "key.path"));
     }
 
     /**
