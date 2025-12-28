@@ -2,12 +2,8 @@ package cz.gyarabProject.api.adaa;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.gyarabProject.api.datatype.AccessToken;
-import cz.gyarabProject.api.datatype.ClientInfo;
-import cz.gyarabProject.api.datatype.Code;
-import cz.gyarabProject.api.datatype.KeyHolder;
-
-import static cz.gyarabProject.api.Helper.*;
+import cz.gyarabProject.api.datatype.*;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,13 +12,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Properties;
 
-public class Token {
-    private final Properties props;
+@Component
+public class TokenRequest {
+    private final Property props;
     private final KeyHolder keyHolder;
 
-    public Token(Properties props, KeyHolder keyHolder) {
+    public TokenRequest(Property props, KeyHolder keyHolder) {
         this.props = props;
         this.keyHolder = keyHolder;
     }
@@ -33,23 +29,23 @@ public class Token {
      * @return URL for getting a token.
      */
     public String getCode(String clientId, String redirectUrl) {
-        return getAbsolutePath(props, "kb.login.uri") + "?response_type=code&client_id=" + clientId + "&redirect_uri=" +
+        return props.getAbsolutePath("kb.login.uri") + "?response_type=code&client_id=" + clientId + "&redirect_uri=" +
                 redirectUrl +
-                "&scope=" + props.getProperty("scopes").replace(props.getProperty("array.separator"), "%20");
+                "&scope=" + props.get("scopes").replace(props.get("array.separator"), "%20");
     }
 
     /**
      * Create refresh token and access token. The refresh token will save to file and access token return.
      * @see #getToken
      */
-    public AccessToken getRefreshToken(String redirectUrl, Code code, ClientInfo client)
+    public RefreshToken getRefreshToken(String redirectUrl, Code code, ClientInfo client)
             throws IOException, InterruptedException {
-        return getToken(redirectUrl, code.code(), client, "authorization_code");
+        return getToken(redirectUrl, code.code(), client, "authorization_code", null);
     }
 
-    public AccessToken getAccessToken(String redirectUrl, String redirectToken, ClientInfo client)
+    public RefreshToken getAccessToken(String redirectUrl, ClientInfo client, RefreshToken token)
         throws IOException, InterruptedException {
-        return getToken(redirectUrl, redirectToken, client, "refresh_token");
+        return getToken(redirectUrl, token.refreshToken(), client, "refresh_token", token);
     }
 
     /**
@@ -60,17 +56,17 @@ public class Token {
      * @param redirectUrl Redirect URL for request.
      * @param codeOrToken Content string of {@link Code} or refresh token for request.
      * @param grandType Specify type of codeOrToken.
-     * @return {@link AccessToken} from response.
+     * @return {@link RefreshToken} Given token with new {@link AccessToken} from response and if then new {@code RefreshToken.refreshToken} as well.
      * @throws IOException Problem with sending request to the server, mapping to {@link JsonNode} or
      * {@link AccessToken} or while writing the refresh token to file.
      * @throws InterruptedException Prolem with sending request to the server.
      */
-    private AccessToken getToken(String redirectUrl, String codeOrToken, ClientInfo client, String grandType)
+    private RefreshToken getToken(String redirectUrl, String codeOrToken, ClientInfo client, String grandType, RefreshToken token)
             throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(getAbsolutePath(props, "kb.uri", "kb.uri.token")));
+                .uri(URI.create(props.getAbsolutePath("kb.uri", "kb.uri.token")));
 
-        builder.header("x-correlation-id", props.getProperty("header.value.x-correlation-id"));
+        builder.header("x-correlation-id", props.get("header.value.x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Content-Type", "application/x-www-form-urlencoded");
 
@@ -82,11 +78,10 @@ public class Token {
                 .send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(response.body());
-        if (node.has("refresh_token")) {
-            createAndWriteFile(getAbsolutePath(props, "key-token.path", "token.refresh.path"), node.get("refresh_token").asText());
+        if (token == null) {
+            token = mapper.readValue(response.body(), RefreshToken.class);
         }
-        return mapper.treeToValue(node, AccessToken.class);
+        return token.setAccessToken(mapper.readValue(response.body(), AccessToken.class));
     }
 
     /**

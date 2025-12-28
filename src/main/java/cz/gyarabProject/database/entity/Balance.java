@@ -11,7 +11,7 @@ public class Balance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true, name = "bank_account_id")
-    private Long bankAccountId;
+    private String bankAccountId;
     private String type;
     @Column(name = "credit_debit_indicator")
     private String creditDebit;
@@ -28,11 +28,11 @@ public class Balance {
 
     protected Balance() {}
 
-    public Balance(Long bankAccountId) {
+    public Balance(String bankAccountId) {
         this.bankAccountId = bankAccountId;
     }
 
-    public Balance(Long bankAccountId, Builder builder) {
+    public Balance(String bankAccountId, Builder builder) {
         this.bankAccountId = bankAccountId;
         this.type = builder.type;
         this.creditDebit = builder.creditDebit;
@@ -87,13 +87,13 @@ public class Balance {
             return this;
         }
 
-        public Balance build(Long bankAccountId) {
+        public Balance build(String bankAccountId) {
             return new Balance(bankAccountId, this);
         }
     }
 
     public Long getId() { return id; }
-    public Long getBankAccountId() { return bankAccountId; }
+    public String getBankAccountId() { return bankAccountId; }
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }

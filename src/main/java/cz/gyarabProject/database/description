@@ -3,6 +3,7 @@ We are using JPA and Hibenate logic which create SQL commands and the program is
 Entity layer
 - declare DB tables
 - NO LOGIC
+- @Entity and @Table
 
 Repository layer
 - connection between DB and app
@@ -11,16 +12,19 @@ Repository layer
 - uses JPA which creates SQL commands under methods
 - for complex SQL needed is using JPQL (modified SQL)
 - ONLY CRUD
+- @Repository
 
 Service layer
 - logic of the DB use
 - using dependency injection
 - @Transactional belong here (coordinate multiple DB calls)
 - NO SQL or DB COMUNICATION (no direct comunication)
+- @Service
 
 Runner layer
 - called only when the application starts
 - logic
+- @Component
 
 Logic of layers
 - Runner layer is manipulating Servise layer

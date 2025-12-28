@@ -12,6 +12,9 @@ public record AccessToken(@JsonProperty(value="access_token") String token,
 
     public AccessToken {
         createdAt = System.currentTimeMillis() / 1000;
+        if (expiresIn > 600) {
+            expiresIn = 179;
+        }
     }
 
     public String getTypeToken() {

@@ -13,16 +13,16 @@ public class AccountId {
     private Long userId;
 
     @Column(nullable = false, unique = true, name = "bank_account_id")
-    private Long bankAccountId;
+    private String bankAccountId;
 
     protected AccountId() {}
 
-    public AccountId(Long userId, Long bankAccountId) {
+    public AccountId(Long userId, String bankAccountId) {
         this.userId = userId;
         this.bankAccountId = bankAccountId;
     }
 
     public Long getId() { return id; }
     public Long getUserId() { return userId; }
-    public Long getBankAccountId() { return bankAccountId; }
+    public String getBankAccountId() { return bankAccountId; }
 }

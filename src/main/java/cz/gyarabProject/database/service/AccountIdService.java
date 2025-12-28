@@ -10,7 +10,7 @@ public class AccountIdService {
         this.accountId = accountId;
     }
 
-    public AccountId add(Long userId, Long bankAccountId) {
+    public AccountId add(Long userId, String bankAccountId) {
         if (userId == null || bankAccountId == null) {
             throw new IllegalArgumentException("UserId or bankAccountId cannot null.");
         } else if (accountId.existsByBankAccountId(bankAccountId)) {

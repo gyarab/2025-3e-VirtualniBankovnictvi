@@ -3,20 +3,22 @@ package cz.gyarabProject.api.adaa;
 import Decryption.ResponseDecryption;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.datatype.ClientInfo;
+import cz.gyarabProject.api.datatype.Property;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Base64;
-import java.util.Properties;
 
 import static cz.gyarabProject.api.Helper.*;
 
-public class Registration {
-    private final Properties props;
+@Component
+public class RegistrationRequest {
+    private final Property props;
     private final String separator;
 
-    public Registration(Properties props) {
+    public RegistrationRequest(Property props) {
         this.props = props;
-        this.separator = props.getProperty("array.separator", ", ");
+        this.separator = props.get("array.separator", ", ");
     }
 
     /**
@@ -28,7 +30,7 @@ public class Registration {
     public String getRegistration(String encryptionKey, String jwt) throws IOException {
         String jsonByte64 = new String(Base64.getEncoder().encode(getRequestJson(jwt, encryptionKey).getBytes()));
 
-        return getAbsolutePath(props, "kb.uri", "kb.uri.oauth2") + "?registrationRequest="
+        return props.getAbsolutePath("kb.uri", "kb.uri.oauth2") + "?registrationRequest="
                 + jsonByte64 + "&state=client123";
     }
 
@@ -52,11 +54,11 @@ public class Registration {
                   "encryptionAlg": "AES-256",
                   "encryptionKey": "%s"
                 }""",
-                props.getProperty("application.name"),
-                props.getProperty("application.name.en"),
-                props.getProperty("application.type"),
-                fromStringToArray(props.getProperty("redirect.uri"), separator),
-                fromStringToArray(props.getProperty("scopes"), separator),
+                props.get("application.name"),
+                props.get("application.name.en"),
+                props.get("application.type"),
+                fromStringToArray(props.get("redirect.uri"), separator),
+                fromStringToArray(props.get("scopes"), separator),
                 jwt,
                 encryptionKey
         );
@@ -78,7 +80,7 @@ public class Registration {
      */
     public ClientInfo decryptResponse(String cipherText, String iv, String key) throws IOException {
         if (isNullOrEmpty(key)) {
-            key = readValidFile(getAbsolutePath(props, "key-token.path", "api-key.path"));
+            key = readValidFile(props.getAbsolutePath("key-token.path", "api-key.path"));
             key = new String(encodeBase64(key));
         }
         return new ObjectMapper().readValue(ResponseDecryption.decrypt(cipherText, iv, key), ClientInfo.class);

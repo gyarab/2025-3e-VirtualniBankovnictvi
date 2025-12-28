@@ -10,11 +10,11 @@ public class BalanceService {
         this.balance =  balance;
     }
 
-    public Balance add(Long bankAccountId) {
+    public Balance add(String bankAccountId) {
         return add(bankAccountId, null);
     }
 
-    public Balance add(Long bankAccountId, Balance.Builder builder) {
+    public Balance add(String bankAccountId, Balance.Builder builder) {
         if (bankAccountId == null) {
             throw new IllegalArgumentException("BankAccountId cannot null.");
         } else if (balance.existsBalanceByBankAccountId(bankAccountId)) {

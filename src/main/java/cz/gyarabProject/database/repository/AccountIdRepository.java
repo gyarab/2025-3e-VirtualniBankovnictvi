@@ -4,5 +4,5 @@ import cz.gyarabProject.database.entity.AccountId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AccountIdRepository extends JpaRepository<AccountId, Long> {
-    boolean existsByBankAccountId(Long bankAccountId);
+    boolean existsByBankAccountId(String bankAccountId);
 }

@@ -130,21 +130,6 @@ public class Helper {
     }
 
     /**
-     * Create a path like {@link String} from .properties velues from {@code keys}.
-     *
-     * @param props {@link Properties} to find {@code keys}.
-     * @param keys for props to find them.
-     * @return path like {@link String} from props by keys.
-     */
-    public static String getAbsolutePath(Properties props, String... keys) {
-        StringBuilder path = new StringBuilder();
-        for (String key : keys) {
-            path.append(props.getProperty(key, ""));
-        }
-        return path.toString();
-    }
-
-    /**
      * Encode a {@code string} to a {@link Base64} format and return it as a {@code byte[]}.
      *
      * @param string {@link String} to be encoded.

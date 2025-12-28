@@ -2,6 +2,8 @@ package cz.gyarabProject.api.adaa;
 
 import cz.gyarabProject.api.datatype.Deployment;
 import cz.gyarabProject.api.datatype.KeyHolder;
+import cz.gyarabProject.api.datatype.Property;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,26 +11,26 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Properties;
 
 import static cz.gyarabProject.api.Helper.*;
 
-public class JWT {
+@Component
+public class JwtRequest {
     private final String separator;
-    private final Properties props;
+    private final Property props;
     private final KeyHolder keyHolder;
 
-    public JWT(Properties props, KeyHolder keyHolder) {
+    public JwtRequest(Property props, KeyHolder keyHolder) {
         this.props = props;
-        this.separator = props.getProperty("array.separator");
+        this.separator = props.get("array.separator");
         this.keyHolder = keyHolder;
     }
 
-    public String createNewTlsAuthentication(Deployment deployment) throws IOException, InterruptedException {
+    public String getNewJwt(Deployment deployment) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(getUri(deployment)));
 
-        builder.header("x-correlation-id", props.getProperty("header.value.x-correlation-id"));
+        builder.header("x-correlation-id", props.get("header.value.x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Content-Type", "application/json");
 
@@ -43,9 +45,9 @@ public class JWT {
 
     private String getUri(Deployment deployment) {
         if (deployment == Deployment.SANDBOX) {
-            return getAbsolutePath(props, "kb.uri.jwt.sanbox");
+            return props.getAbsolutePath("kb.uri.jwt.sandbox");
         } else if (deployment == Deployment.PRODUCTION) {
-            return getAbsolutePath(props, "kb.uri.jwt.production");
+            return props.getAbsolutePath("kb.uri.jwt.production");
         } else {
             throw new IllegalStateException("Unsupported deployment type");
         }
@@ -78,16 +80,16 @@ public class JWT {
                   "tosUri": "%s",
                   "policyUri": "%s"
                 }""",
-                props.getProperty("application.name"),
-                props.getProperty("application.name.en"),
-                props.getProperty("application.version"),
-                props.getProperty("application.uri"),
-                fromStringToArray(props.getProperty("redirect.uri"), separator),
-                props.getProperty("registration.back.uri"),
-                fromStringToArray(props.getProperty("contacts"), separator, "email: "),
-                props.getProperty("logo.uri"),
-                props.getProperty("tos.uri"),
-                props.getProperty("policy.uri")
+                props.get("application.name"),
+                props.get("application.name.en"),
+                props.get("application.version"),
+                props.get("application.uri"),
+                fromStringToArray(props.get("redirect.uri"), separator),
+                props.get("registration.back.uri"),
+                fromStringToArray(props.get("contacts"), separator, "email: "),
+                props.get("logo.uri"),
+                props.get("tos.uri"),
+                props.get("policy.uri")
         );
         if (!isValidJson(body)) {
             throw new IOException("body is invalid JSON");
