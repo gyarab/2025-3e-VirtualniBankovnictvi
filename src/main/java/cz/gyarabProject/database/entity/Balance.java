@@ -2,11 +2,12 @@ package cz.gyarabProject.database.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
 @Table(name = "balances")
-public class Balance {
+public class Balance implements BigDecimalNormalizer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,14 +16,14 @@ public class Balance {
     private String type;
     @Column(name = "credit_debit_indicator")
     private String creditDebit;
-    @Column(name = "amount_value")
-    private Long amountValue;
+    @Column(name = "amount_value", precision = 19, scale = 4)
+    private BigDecimal amountValue;
     @Column(name = "amount_currency")
     private String amountCurrency;
     @Column(name = "valid_at")
     private Instant validAt;
-    @Column(name = "credit_line_value")
-    private Long creditLineValue;
+    @Column(name = "credit_line_value", precision = 19, scale = 4)
+    private BigDecimal creditLineValue;
     @Column(name = "credit_line_currency")
     private String creditLineCurrency;
 
@@ -32,87 +33,24 @@ public class Balance {
         this.bankAccountId = bankAccountId;
     }
 
-    public Balance(String bankAccountId, Builder builder) {
+    public Balance(String bankAccountId, BalanceDto builder) {
         this.bankAccountId = bankAccountId;
         this.type = builder.type;
         this.creditDebit = builder.creditDebit;
-        this.amountValue = builder.amountValue;
-        this.amountCurrency = builder.amountCurrency;
+        this.amountValue = BigDecimalNormalizer.normalize(builder.amount.value);
+        this.amountCurrency = builder.amount.currency;
         this.validAt = builder.validAt;
-        this.creditLineValue = builder.creditLineValue;
-        this.creditLineCurrency = builder.creditLineCurrency;
-    }
-
-    public static class Builder {
-        private String type;
-        private String creditDebit;
-        private Long amountValue;
-        private String amountCurrency;
-        private Instant validAt;
-        private Long creditLineValue;
-        private String creditLineCurrency;
-
-        public Builder type(String type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder creditDebit(String creditDebit) {
-            this.creditDebit = creditDebit;
-            return this;
-        }
-
-        public Builder amountValue(Long amountValue) {
-            this.amountValue = amountValue;
-            return this;
-        }
-
-        public Builder amountCurrency(String amountCurrency) {
-            this.amountCurrency = amountCurrency;
-            return this;
-        }
-
-        public Builder validAt(Instant validAt) {
-            this.validAt = validAt;
-            return this;
-        }
-
-        public Builder creditLineValue(Long creditLineValue) {
-            this.creditLineValue = creditLineValue;
-            return this;
-        }
-
-        public Builder creditLineCurrency(String creditLineCurrency) {
-            this.creditLineCurrency = creditLineCurrency;
-            return this;
-        }
-
-        public Balance build(String bankAccountId) {
-            return new Balance(bankAccountId, this);
-        }
+        this.creditLineValue = BigDecimalNormalizer.normalize(builder.creditLine.value);
+        this.creditLineCurrency = builder.creditLine.currency;
     }
 
     public Long getId() { return id; }
     public String getBankAccountId() { return bankAccountId; }
-
     public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-
     public String getCreditDebit() { return creditDebit; }
-    public void setCreditDebit(String creditDebit) { this.creditDebit = creditDebit; }
-
-    public Long getAmountValue() { return amountValue; }
-    public void setAmountValue(Long amountValue) { this.amountValue = amountValue; }
-
+    public BigDecimal getAmountValue() { return amountValue; }
     public String getAmountCurrency() { return amountCurrency; }
-    public void setAmountCurrency(String amountCurrency) { this.amountCurrency = amountCurrency; }
-
     public Instant getValidAt() { return validAt; }
-    public void setValidAt(Instant validAt) { this.validAt = validAt; }
-
-    public Long getCreditLineValue() { return creditLineValue; }
-    public void setCreditLineValue(Long creditLineValue) { this.creditLineValue = creditLineValue; }
-
+    public BigDecimal getCreditLineValue() { return creditLineValue; }
     public String getCreditLineCurrency() { return creditLineCurrency; }
-    public void setCreditLineCurrency(String creditLineCurrency) { this.creditLineCurrency = creditLineCurrency; }
 }

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record ClientInfo (
+public record BankClientInfo(
         @JsonProperty("application_type") String appType,
         @JsonProperty("redirect_uris") String[] redirectUri,
         @JsonProperty("client_name") String name,

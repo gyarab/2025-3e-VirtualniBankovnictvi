@@ -2,7 +2,8 @@ package cz.gyarabProject.api.adaa;
 
 import Decryption.ResponseDecryption;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.gyarabProject.api.datatype.ClientInfo;
+import cz.gyarabProject.api.datatype.BankClientInfo;
+import cz.gyarabProject.api.datatype.ObjectMappers;
 import cz.gyarabProject.api.datatype.Property;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +16,13 @@ import static cz.gyarabProject.api.Helper.*;
 public class RegistrationRequest {
     private final Property props;
     private final String separator;
+    private final ObjectMapper mapper;
 
-    public RegistrationRequest(Property props) {
+    public RegistrationRequest(Property props,
+                               ObjectMappers mappers) {
         this.props = props;
         this.separator = props.get("array.separator", ", ");
+        this.mapper = mappers.getMapper();
     }
 
     /**
@@ -30,7 +34,7 @@ public class RegistrationRequest {
     public String getRegistration(String encryptionKey, String jwt) throws IOException {
         String jsonByte64 = new String(Base64.getEncoder().encode(getRequestJson(jwt, encryptionKey).getBytes()));
 
-        return props.getAbsolutePath("kb.uri", "kb.uri.oauth2") + "?registrationRequest="
+        return props.getKbUri("oauth2") + "?registrationRequest="
                 + jsonByte64 + "&state=client123";
     }
 
@@ -78,11 +82,11 @@ public class RegistrationRequest {
      * @return JSON like {@link String} which is crypted in {@code cipherText}.
      * @throws IOException when {@code cipherText} is invalid JSON or cannot be decrypted by iv and key.
      */
-    public ClientInfo decryptResponse(String cipherText, String iv, String key) throws IOException {
+    public BankClientInfo decryptResponse(String cipherText, String iv, String key) throws IOException {
         if (isNullOrEmpty(key)) {
             key = readValidFile(props.getAbsolutePath("key-token.path", "api-key.path"));
             key = new String(encodeBase64(key));
         }
-        return new ObjectMapper().readValue(ResponseDecryption.decrypt(cipherText, iv, key), ClientInfo.class);
+        return mapper.readValue(ResponseDecryption.decrypt(cipherText, iv, key), BankClientInfo.class);
     }
 }

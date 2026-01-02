@@ -1,6 +1,7 @@
 package cz.gyarabProject.database.service;
 
 import cz.gyarabProject.database.entity.Balance;
+import cz.gyarabProject.database.entity.BalanceDto;
 import cz.gyarabProject.database.repository.BalanceRepository;
 
 public class BalanceService {
@@ -14,7 +15,7 @@ public class BalanceService {
         return add(bankAccountId, null);
     }
 
-    public Balance add(String bankAccountId, Balance.Builder builder) {
+    public Balance add(String bankAccountId, BalanceDto builder) {
         if (bankAccountId == null) {
             throw new IllegalArgumentException("BankAccountId cannot null.");
         } else if (balance.existsBalanceByBankAccountId(bankAccountId)) {
@@ -26,7 +27,7 @@ public class BalanceService {
         return balance.save(new Balance(bankAccountId, builder));
     }
 
-    public Balance.Builder getBalanceBuilder() {
-        return new Balance.Builder();
+    public BalanceDto getBalanceDto() {
+        return new BalanceDto();
     }
 }

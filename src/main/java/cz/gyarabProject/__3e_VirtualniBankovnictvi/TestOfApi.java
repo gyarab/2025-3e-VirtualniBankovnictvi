@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Random;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -25,8 +26,8 @@ public class TestOfApi {
     private final TokenRequest tokenRequest;
 
     final boolean SANDBOX = false;
-    final String encryptionKey = "MnM1djh5L0I/RShIK01iUWVUaFdtWnEzdDZ3OXokQyY=";
-    ClientInfo clientInfo = null;
+    String encryptionKey;
+    BankClientInfo clientInfo = null;
     Code code = null;
     String jwt = null;
     RefreshToken refreshToken = null;
@@ -54,7 +55,7 @@ public class TestOfApi {
     @GetMapping(value = "/test-of-api/newJWT")
     public String newJWT() throws InterruptedException {
         try {
-            jwt = jwtRequest.getNewJwt(Deployment.PRODUCTION);
+            jwt = jwtRequest.getNewJwt();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -76,19 +77,16 @@ public class TestOfApi {
     ) {
         try {
             if (salt.isEmpty() || encryptedData.isEmpty()) {
-                String url;
                 if (SANDBOX) {
-                    url = registrationRequest.getRegistration(encryptionKey, jwt);
+                    encryptionKey = "MnM1djh5L0I/RShIK01iUWVUaFdtWnEzdDZ3OXokQyY=";
                 } else {
-                    url = registrationRequest.getRegistration(encryptionKey, jwt);
+                    encryptionKey = generateEncryprionKey();
                 }
-
+                String url;
+                url = registrationRequest.getRegistration(encryptionKey, jwt);
                 response.sendRedirect(url);
             } else {
                 String key;
-                if (SANDBOX) {
-                    key = encryptionKey;
-                }
                 clientInfo = registrationRequest.decryptResponse(encryptedData, salt, encryptionKey);
                 return clientInfo.toString();
             }
@@ -96,6 +94,12 @@ public class TestOfApi {
             return e.getMessage();
         }
         return "";
+    }
+
+    private String generateEncryprionKey() {
+        byte[] bytes = new byte[32];
+        new Random().nextBytes(bytes);
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
     @GetMapping(value = "test-of-api/token", produces = MediaType.TEXT_HTML_VALUE)

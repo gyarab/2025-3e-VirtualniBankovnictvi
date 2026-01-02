@@ -17,10 +17,14 @@ import java.time.Duration;
 public class TokenRequest {
     private final Property props;
     private final KeyHolder keyHolder;
+    private final ObjectMapper mapper;
 
-    public TokenRequest(Property props, KeyHolder keyHolder) {
+    public TokenRequest(Property props,
+                        KeyHolder keyHolder,
+                        ObjectMappers mappers) {
         this.props = props;
         this.keyHolder = keyHolder;
+        this.mapper = mappers.getMapper();
     }
 
     /**
@@ -38,12 +42,12 @@ public class TokenRequest {
      * Create refresh token and access token. The refresh token will save to file and access token return.
      * @see #getToken
      */
-    public RefreshToken getRefreshToken(String redirectUrl, Code code, ClientInfo client)
+    public RefreshToken getRefreshToken(String redirectUrl, Code code, BankClientInfo client)
             throws IOException, InterruptedException {
         return getToken(redirectUrl, code.code(), client, "authorization_code", null);
     }
 
-    public RefreshToken getAccessToken(String redirectUrl, ClientInfo client, RefreshToken token)
+    public RefreshToken getAccessToken(String redirectUrl, BankClientInfo client, RefreshToken token)
         throws IOException, InterruptedException {
         return getToken(redirectUrl, token.refreshToken(), client, "refresh_token", token);
     }
@@ -52,7 +56,7 @@ public class TokenRequest {
      * Request KBs api for refresh token and from the response save refresh token to file and rest will save to
      * {@link AccessToken}.
      *
-     * @param client ID and secret from {@link ClientInfo} for request.
+     * @param client ID and secret from {@link BankClientInfo} for request.
      * @param redirectUrl Redirect URL for request.
      * @param codeOrToken Content string of {@link Code} or refresh token for request.
      * @param grandType Specify type of codeOrToken.
@@ -61,12 +65,12 @@ public class TokenRequest {
      * {@link AccessToken} or while writing the refresh token to file.
      * @throws InterruptedException Prolem with sending request to the server.
      */
-    private RefreshToken getToken(String redirectUrl, String codeOrToken, ClientInfo client, String grandType, RefreshToken token)
+    private RefreshToken getToken(String redirectUrl, String codeOrToken, BankClientInfo client, String grandType, RefreshToken token)
             throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(props.getAbsolutePath("kb.uri", "kb.uri.token")));
+                .uri(URI.create(props.getKbUri("token")));
 
-        builder.header("x-correlation-id", props.get("header.value.x-correlation-id"));
+        builder.header("x-correlation-id", props.get("x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Content-Type", "application/x-www-form-urlencoded");
 
@@ -77,7 +81,6 @@ public class TokenRequest {
                 .build()
                 .send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
-        ObjectMapper mapper = new ObjectMapper();
         if (token == null) {
             token = mapper.readValue(response.body(), RefreshToken.class);
         }
@@ -92,7 +95,7 @@ public class TokenRequest {
      * @param grandType Specify type of codeOrToken.
      * @return {@link HttpRequest.BodyPublisher}.
      */
-    private HttpRequest.BodyPublisher getRequestBody(String redirectUrl, String codeOrToken, ClientInfo client, String grandType) {
+    private HttpRequest.BodyPublisher getRequestBody(String redirectUrl, String codeOrToken, BankClientInfo client, String grandType) {
         String key;
         if (grandType.equals("authorization_code")) {
             key = "&code=";
