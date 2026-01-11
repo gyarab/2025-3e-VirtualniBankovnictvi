@@ -73,6 +73,10 @@ public class Property {
         return getSubscriptionUri(accountId) + "/" + substrictionId;
     }
 
+    public String getStatementUri(String accountId, Instant from) {
+        return getUriWithAccount(accountId, "statements") + "?dateFrom=" + from.toString();
+    }
+
     public String getTransactionUri(String accountId, Instant from, Instant to, int size, int page) {
         Map<String, String> map = new HashMap<>();
         map.put("account", accountId);
