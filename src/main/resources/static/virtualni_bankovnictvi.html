@@ -3,155 +3,253 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vítejte | Virtuální bankovnictví</title>
-  <meta name="description" content="Jednoduchá ukázka vstupní stránky pro virtuální bankovnictví — bez připojení k API." />
+  <title>Naše Banka | Přihlášení</title>
   <style>
-    :root{
-      --bg:#f6f8fa; --card:#ffffff; --muted:#6b7280; --accent:#0ea5a4; --accent-dark:#087b79;
-      --glass: rgba(255,255,255,0.6);
+    :root {
+      --kb-red: #e30613;
+      --kb-dark: #1a1a1a;
+      --kb-gray: #f3f4f6;
+      --kb-text: #2d2d2d;
+      --white: #ffffff;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,#eef2f7 0%,var(--bg) 100%);color:#0f172a}
-    .container{max-width:1000px;margin:40px auto;padding:24px}
-    header{display:flex;align-items:center;justify-content:space-between}
-    .brand{display:flex;gap:12px;align-items:center}
-    .logo{width:48px;height:48px;padding:8px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
-    h1{font-size:1.5rem;margin:0}
-    p.lead{margin:6px 0 0;color:var(--muted)}
 
-    main{display:grid;grid-template-columns:1fr 420px;gap:24px;margin-top:28px}
-    .card{background:var(--card);padding:20px;border-radius:14px;box-shadow:0 6px 18px rgba(16,24,40,0.06);}
+    * { box-sizing: border-box; }
 
-    .features{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .feature{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(14,165,164,0.06),transparent);}
-    .feature h3{margin:0;font-size:0.95rem}
-    .feature p{margin:6px 0 0;color:var(--muted);font-size:0.875rem}
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--kb-gray);
+      color: var(--kb-text);
+      line-height: 1.5;
+    }
 
-    form.login{display:flex;flex-direction:column;gap:12px}
-    label{font-size:0.85rem;color:var(--muted)}
-    input[type="text"],input[type="password"]{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ee;font-size:0.95rem}
-    .row{display:flex;gap:12px;align-items:center}
-    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:white;border:none;font-weight:600;cursor:pointer}
-    .btn.secondary{background:transparent;border:1px solid #e6e9ee;color:var(--accent-dark)}
-    .small{font-size:0.85rem;color:var(--muted)}
+    header {
+      background-color: var(--white);
+      border-bottom: 4px solid var(--kb-red);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 0 0 var(--kb-dark), 0 4px 10px rgba(0,0,0,0.1);
+    }
 
-    footer{margin-top:22px;text-align:center;color:var(--muted);font-size:0.85rem}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-decoration: none;
+    }
 
-    /* responsivity */
-    @media (max-width:900px){main{grid-template-columns:1fr;}}
+    .logo-kb {
+      background-color: var(--kb-red);
+      color: white;
+      font-weight: 900;
+      padding: 8px 12px;
+      font-size: 1.4rem;
+      letter-spacing: -1px;
+      border: 3px solid var(--kb-dark);
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--kb-dark);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 30px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid #e0e0e0;
+      padding: 30px;
+    }
+
+    h2 {
+      border-left: 4px solid var(--kb-red);
+      padding-left: 15px;
+      margin-top: 0;
+      font-size: 1.5rem;
+      color: var(--kb-dark);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .feature {
+      padding: 15px;
+      border: 1px solid #f0f0f0;
+    }
+
+    .feature h3 {
+      color: var(--kb-red);
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"], input[type="password"] {
+      padding: 12px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--kb-red);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      border: none;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--kb-red);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #be0510;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 2px solid var(--kb-dark);
+      color: var(--kb-dark);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--kb-dark);
+      color: white;
+    }
+
+    footer {
+      margin-top: 50px;
+      padding: 20px;
+      border-top: 1px solid #ccc;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 850px) {
+      main { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo">VB</div>
-        <div>
-          <h1>Virtuální Bankovnictví</h1>
-          <p class="lead">Bezpečný přístup k vašim financím — demo rozhraní</p>
-        </div>
+
+  <header>
+    <div class="brand">
+      <div class="logo-kb">KB</div>
+      <div class="brand-text">
+        <h1>Naše Banka</h1>
       </div>
-      <nav aria-label="Hlavní menu">
-        <button class="btn secondary" onclick="toggleDemo()">Demo mód</button>
-      </nav>
-    </header>
+    </div>
+    <button class="btn btn-outline" style="padding: 8px 16px; font-size: 0.8rem;" onclick="window.location.href='sandbox.html'">Sandbox</button>
+  </header>
 
+  <div class="container">
     <main>
-      <section class="card" aria-labelledby="welcome-title">
-        <h2 id="welcome-title">Vítejte na svém účtu</h2>
-        <p class="small">Toto je jednoduchá ukázka frontendu pro virtuální bankovnictví. Zde můžete prohlížet základní informace, historie transakcí a provádět běžné akce — v tomto demo souboru však není připojeno žádné API.</p>
+      <section class="card">
+        <h2>Vítejte v internetovém bankovnictví</h2>
+        <p>Vstupujete do zabezpečené zóny. Pro přístup k vašemu účtu a sjednání schůzek se prosím přihlaste.</p>
 
-        <div style="margin-top:16px" class="features">
+        <div class="features">
           <div class="feature">
-            <h3>Rychlý přehled</h3>
-            <p>Saldo, poslední transakce a důležité upozornění na jednom místě.</p>
+            <h3>Moje finance</h3>
+            <p>Okamžitý přehled o zůstatcích na všech vašich účtech a kartách.</p>
           </div>
           <div class="feature">
-            <h3>Bezpečné přihlášení</h3>
-            <p>Dvoufaktorové ověření a šifrované spojení (demo).</p>
-          </div>
-          <div class="feature">
-            <h3>Převody</h3>
-            <p>Jednoduché posílání peněz mezi účty (v demo verzi pouze simulace).</p>
-          </div>
-          <div class="feature">
-            <h3>Historie</h3>
-            <p>Filtrovatelný výpis transakcí s možností exportu.</p>
+            <h3>Bezpečnost</h3>
+            <p>Špičkové zabezpečení vašich transakcí a osobních údajů.</p>
           </div>
         </div>
 
-        <hr style="margin:18px 0;border:none;border-top:1px solid #eef2f5" />
-
-        <h3>Ukázkový účet</h3>
-        <p class="small">Pro účely tohoto dema můžete použít přihlašovací údaje níže (lokální validace, žádné skutečné přihlášení):</p>
-        <ul class="small">
-          <li><strong>Uživatel:</strong> demo@bank.cz</li>
-          <li><strong>Heslo:</strong> Demo1234</li>
-        </ul>
-
+        <div style="margin-top: 30px; background: #fdf2f2; padding: 15px; border: 1px solid #fad2d2;">
+          <p style="margin:0; font-weight: bold;">Testovací přístup:</p>
+          <code style="display:block; margin-top:5px;">Uživatel: demo@bank.cz<br>Heslo: Demo1234</code>
+        </div>
       </section>
 
-      <aside class="card" aria-labelledby="login-title">
-        <h2 id="login-title">Přihlášení</h2>
-        <form class="login" onsubmit="return handleLogin(event)">
-          <div>
-            <label for="email">E‑mail nebo uživatelské jméno</label>
-            <input id="email" name="email" type="text" placeholder="např. demo@bank.cz" required />
+      <aside class="card">
+        <h2 style="border-color: var(--kb-dark);">Přihlášení</h2>
+        <form class="login-form" onsubmit="return handleLogin(event)">
+          <div class="input-group">
+            <label for="email">Uživatelské jméno</label>
+            <input id="email" type="text" placeholder="demo@bank.cz" required />
           </div>
 
-          <div>
+          <div class="input-group">
             <label for="password">Heslo</label>
-            <input id="password" name="password" type="password" placeholder="Vaše heslo" required />
+            <input id="password" type="password" placeholder="••••••••" required />
           </div>
 
-          <div class="row">
-            <button class="btn" type="submit">Přihlásit se</button>
-            <button class="btn secondary" type="button" onclick="openRegister()">Registrovat</button>
-          </div>
+          <button class="btn btn-primary" type="submit">Přihlásit se</button>
 
-          <div style="margin-top:6px" class="row small">
-            <input id="remember" type="checkbox" /> <label for="remember">Zapamatovat mě</label>
-          </div>
-
-          <p id="message" class="small" style="margin-top:8px;color:var(--muted)"></p>
+          <div id="message" style="text-align: center; font-weight: bold; font-size: 0.85rem;"></div>
         </form>
-
-        <hr style="margin:12px 0;border:none;border-top:1px solid #eef2f5" />
-        <p class="small"><strong>Bezpečnostní info:</strong> Tento soubor je demo — v reálné aplikaci zkontrolujte HTTPS, Content Security Policy a zabezpečení serveru.</p>
       </aside>
     </main>
-
-    <footer>
-      <p>© <span id="year"></span> Virtuální Bankovnictví — Demo projekt. Žádné skutečné finanční transakce nejsou prováděny.</p>
-    </footer>
   </div>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+  <footer>
+    <p>&copy; 2025 Naše KB, a. s. | Bankovnictví v novém stylu</p>
+  </footer>
 
+  <script>
     function handleLogin(e){
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
       const pass = document.getElementById('password').value;
       const msg = document.getElementById('message');
 
-      // Lokální demo validace (bez API)
       if(email.toLowerCase() === 'demo@bank.cz' && pass === 'Demo1234'){
-        msg.style.color = 'green';
-        msg.textContent = 'Přihlášení proběhlo úspěšně (demo). Nyní byste byli přesměrováni do uživatelského přehledu.';
+        msg.style.color = "green";
+        msg.textContent = "✓ Přihlášení úspěšné...";
+        setTimeout(() => {
+            window.location.href = 'ucet.html';
+        }, 500);
       } else {
-        msg.style.color = '#b91c1c';
-        msg.textContent = 'Neplatné přihlašovací údaje. Zkuste demo@bank.cz / Demo1234.';
+        msg.style.color = "var(--kb-red)";
+        msg.textContent = "✕ Neplatné jméno nebo heslo.";
       }
       return false;
-    }
-
-    function openRegister(){
-      alert('Toto je demo. Funkce registrace zatím není aktivní.');
-    }
-
-    function toggleDemo(){
-      alert('Demo mód: interaktivní prvky zůstanou lokální.');
     }
   </script>
 </body>
