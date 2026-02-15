@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>Schůzka | George</title>
+  <style>
+    :root { --g-blue: #0044ff; --g-cyan: #00d9ff; }
+    body { font-family: sans-serif; background: #f0f4f8; margin: 0; }
+    header { background: white; padding: 15px 40px; border-bottom: 2px solid var(--g-blue); display: flex; align-items:center; justify-content:space-between; }
+
+    .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--g-blue); }
+    .logo-circle { width: 30px; height: 30px; background: var(--g-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; }
+
+    .container { max-width: 450px; margin: 50px auto; }
+    .card { background: white; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+    .profile-img { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid var(--g-cyan); margin-bottom: 20px; }
+    .btn { background: var(--g-blue); color: white; padding: 16px; border: none; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="ucet.html" style="color:var(--g-blue); text-decoration:none; font-weight:bold;">← ZPĚT</a>
+    <div class="logo-container">
+      <div class="logo-circle">G</div>
+      <div style="font-weight:700; font-size:20px;">George</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <img src="jonny_sins_in_suit.jpeg" class="profile-img" alt="Bankéř">
+      <h2 style="margin:0; color:var(--g-blue);">Martin Kovář</h2>
+      <p style="color:#718096; font-weight:600;">Váš osobní bankéř</p>
+      <div style="text-align:left; margin-top:30px;">
+        <label style="font-size:12px; font-weight:700; color:#a0aec0; text-transform:uppercase;">Vyberte termín</label>
+        <input type="date" style="width:100%; padding:12px; margin-top:8px; border:2px solid #edf2f7; border-radius:10px;" value="2026-02-25">
+      </div>
+      <button class="btn" onclick="alert('Potvrzeno! Martin se vám ozve.')">SJEDNAT SCHŮZKU</button>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>Můj George | Účet</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root { --g-blue: #0044ff; --g-cyan: #00d9ff; --bg: #f4f7fa; }
+    body { margin: 0; font-family: sans-serif; background: var(--bg); }
+    nav { background: var(--g-blue); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+
+    .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; }
+    .logo-circle { width: 30px; height: 30px; background: var(--g-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; border: 2px solid white; }
+
+    .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+    .card { background: white; border-radius: 20px; padding: 30px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .balance-label { font-size: 14px; color: #718096; text-transform: uppercase; font-weight: 700; }
+    .balance-value { font-size: 38px; font-weight: 800; color: var(--g-blue); margin: 10px 0; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; border-top: 1px solid #edf2f7; padding-top: 20px; }
+    .stat-item { font-size: 18px; font-weight: 600; }
+    .income { color: #2ecc71; } .expense { color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="virtualni_bankovnictvi.html" class="logo-container">
+      <div class="logo-circle">G</div>
+      <div style="font-weight:700; font-size:20px;">George</div>
+    </a>
+    <div style="display:flex; gap:20px; align-items:center;">
+      <a href="schuzka.html" style="color:white; text-decoration:none; font-weight:bold;">Schůzka</a>
+      <a href="odhlaseni.html" style="background:white; color:var(--g-blue); padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; font-size:14px;">Odhlásit</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div class="balance-label">Dostupný zůstatek</div>
+      <div class="balance-value">145 280,50 Kč</div>
+      <div class="stats-grid">
+        <div class="stat-item">Příjmy: <span class="income">+ 42 000,00 Kč</span></div>
+        <div class="stat-item">Výdaje: <span class="expense">- 12 450,00 Kč</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0; color:var(--g-blue);">Historie zůstatku</h3>
+      <div style="height: 300px;">
+        <canvas id="georgeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('georgeChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Leden', 'Únor', 'Březen', 'Duben', 'Květen'],
+        datasets: [{
+          label: 'Zůstatek (Kč)',
+          data: [110500, 105200, 115800, 108400, 145280],
+          borderColor: '#0044ff',
+          backgroundColor: 'rgba(0, 217, 255, 0.15)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 4,
+          pointRadius: 6,
+          pointBackgroundColor: '#00d9ff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { ticks: { callback: value => value.toLocaleString() + ' Kč' } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
