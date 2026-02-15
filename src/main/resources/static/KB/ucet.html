@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Přehled účtu | Naše Banka</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --kb-red: #e30613;
+      --kb-dark: #1a1a1a;
+      --kb-gray: #f3f4f6;
+      --kb-text: #2d2d2d;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--kb-gray);
+      color: var(--kb-text);
+      line-height: 1.5;
+    }
+
+    /* Horní lišta v KB stylu */
+    header {
+      background-color: var(--white);
+      border-bottom: 4px solid var(--kb-red);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 0 0 var(--kb-dark), 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-kb {
+      background-color: var(--kb-red);
+      color: white;
+      font-weight: 900;
+      padding: 8px 12px;
+      font-size: 1.4rem;
+      letter-spacing: -1px;
+      border: 3px solid var(--kb-dark); /* Černé ohraničení čtverce */
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--kb-dark);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    /* Karty */
+    .card {
+      background: var(--white);
+      border: 1px solid #e0e0e0;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    h2, h3 {
+      border-left: 4px solid var(--kb-red);
+      padding-left: 15px;
+      margin-top: 0;
+      color: var(--kb-dark);
+    }
+
+    .balance-amount {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 15px 0;
+      color: var(--kb-dark);
+    }
+
+    /* Tabulka transakcí */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th {
+      text-align: left;
+      padding: 15px;
+      background-color: #f9fafb;
+      border-bottom: 2px solid var(--kb-red);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: #666;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .negative { color: var(--kb-red); font-weight: 600; }
+    .positive { color: #059669; font-weight: 600; }
+
+    .btn {
+      padding: 12px 24px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      border: none;
+      background-color: var(--kb-red);
+      color: white;
+      transition: 0.2s;
+    }
+
+    .btn:hover { background-color: #be0510; }
+
+    footer {
+      margin-top: 50px;
+      padding: 20px;
+      border-top: 1px solid #ccc;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    .logout-link {
+      color: var(--kb-red);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .logout-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div style="margin-top: 20px; text-align: center;">
+    <p>Potřebujete poradit s investicemi?</p>
+    <button class="btn btn-outline" onclick="window.location.href='schuzka.html'">
+        Domluvit si termín
+    </button>
+</div>
+    <div class="brand">
+      <div class="logo-kb">KB</div>
+      <div class="brand-text">
+        <h1>Naše Banka</h1>
+      </div>
+    </div>
+    <div style="font-size: 0.9rem;">
+      <strong>Jan Novák</strong> | <a href="odhlaseni.html" class="logout-link">Odhlásit se</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="card">
+      <h2>Můj běžný účet</h2>
+      <p style="color: #666; margin-top: 5px;">Číslo účtu: 43-1234567890/0100</p>
+      <div class="balance-amount">45 280,50 CZK</div>
+      <button class="btn" onclick="alert('Funkce zadání platby')">Nová platba</button>
+    </section>
+
+    <section class="card">
+      <h3>Vývoj zůstatku (2025)</h3>
+      <div style="height: 300px; margin-top: 20px;">
+        <canvas id="balanceChart"></canvas>
+      </div>
+    </section>
+
+    <div class="card">
+      <h3>Historie transakcí</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Protiúčet / Popis</th>
+            <th style="text-align: right;">Částka</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>12. 05. 2025</td>
+            <td>Supermarket Albert <br><span style="font-size: 0.8rem; color: #888;">Nákup potravin</span></td>
+            <td style="text-align: right;" class="negative">- 1 245,00 CZK</td>
+          </tr>
+          <tr>
+            <td>10. 05. 2025</td>
+            <td>Zaměstnavatel s.r.o. <br><span style="font-size: 0.8rem; color: #888;">Výplata květen</span></td>
+            <td style="text-align: right;" class="positive">+ 38 500,00 CZK</td>
+          </tr>
+          <tr>
+            <td>08. 05. 2025</td>
+            <td>Čerpací stanice <br><span style="font-size: 0.8rem; color: #888;">Platba kartou</span></td>
+            <td style="text-align: right;" class="negative">- 1 850,00 CZK</td>
+          </tr>
+          <tr>
+            <td>05. 05. 2025</td>
+            <td>Nájemné <br><span style="font-size: 0.8rem; color: #888;">Trvalý příkaz</span></td>
+            <td style="text-align: right;" class="negative">- 12 000,00 CZK</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; <span id="year"></span> Naše KB, a. s. | Virtuální bankovnictví - Demo projekt.</p>
+  </footer>
+
+  <script>
+    // Nastavení aktuálního roku v patičce
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Inicializace grafu
+    const ctx = document.getElementById('balanceChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Leden', 'Únor', 'Březen', 'Duben', 'Květen'],
+        datasets: [{
+          label: 'Zůstatek v CZK',
+          data: [42000, 39500, 41200, 38000, 45280],
+          borderColor: '#e30613',
+          backgroundColor: 'rgba(227, 6, 19, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.3,
+          pointBackgroundColor: '#1a1a1a',
+          pointRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            grid: { color: '#eee' },
+            ticks: { callback: function(value) { return value + ' Kč'; } }
+          },
+          x: {
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sandbox | Naše Banka</title>
+  <style>
+    :root {
+      --kb-red: #e30613;
+      --kb-dark: #1a1a1a;
+      --kb-gray: #f3f4f6;
+      --kb-text: #2d2d2d;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background-color: var(--kb-gray);
+      color: var(--kb-text);
+    }
+
+    header {
+      background-color: var(--white);
+      border-bottom: 4px solid var(--kb-red);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 0 0 var(--kb-dark);
+    }
+
+    .logo-kb {
+      background-color: var(--kb-red);
+      color: white;
+      font-weight: 900;
+      padding: 8px 12px;
+      border: 3px solid var(--kb-dark);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid #e0e0e0;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      border-left: 4px solid var(--kb-red);
+      padding-left: 15px;
+      color: var(--kb-dark);
+    }
+
+    .sandbox-tool {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 30px;
+    }
+
+    .control-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--kb-red);
+    }
+
+    .result-box {
+      background: var(--kb-dark);
+      color: white;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .result-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--kb-red);
+      margin: 10px 0;
+    }
+
+    .btn-back {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: var(--kb-dark);
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div style="display:flex; align-items:center; gap:15px;">
+      <div class="logo-kb">KB</div>
+      <div style="text-transform: uppercase; font-weight: bold;">Naše Banka</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <a href="virtualni_bankovnictvi.html" class="btn-back">← Zpět do bankovnictví</a>
+
+    <section class="card">
+      <h2>Interaktivní Sandbox: Kalkulačka úvěru</h2>
+      <p>Simulujte si podmínky vašeho úvěru v reálném čase. Posouváním jezdců měňte parametry.</p>
+
+      <div class="sandbox-tool">
+        <div class="controls">
+          <div class="control-group">
+            <label>Výše úvěru: <span id="amountText">500 000</span> Kč</label>
+            <input type="range" id="amount" min="10000" max="1000000" step="10000" value="500000">
+          </div>
+
+          <div class="control-group">
+            <label>Doba splácení: <span id="yearsText">5</span> let</label>
+            <input type="range" id="years" min="1" max="10" step="1" value="5">
+          </div>
+
+          <div class="control-group">
+            <label>Úroková sazba: <span id="rateText">5.9</span> %</label>
+            <input type="range" id="rate" min="1" max="15" step="0.1" value="5.9">
+          </div>
+        </div>
+
+        <div class="result-box">
+          <div style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Vaše měsíční splátka</div>
+          <div class="result-value" id="monthlyPayment">9 644 Kč</div>
+          <p style="font-size: 0.8rem; opacity: 0.7;">* Tato kalkulace je pouze orientační a nezavazuje banku k uzavření smlouvy.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const amountInput = document.getElementById('amount');
+    const yearsInput = document.getElementById('years');
+    const rateInput = document.getElementById('rate');
+
+    const amountText = document.getElementById('amountText');
+    const yearsText = document.getElementById('yearsText');
+    const rateText = document.getElementById('rateText');
+    const resultDisplay = document.getElementById('monthlyPayment');
+
+    function calculate() {
+      const P = parseFloat(amountInput.value);
+      const r = parseFloat(rateInput.value) / 100 / 12;
+      const n = parseFloat(yearsInput.value) * 12;
+
+      // Vzorec pro anuitní splátku: M = P [ i(1 + i)^n ] / [ (1 + i)^n – 1 ]
+      const x = Math.pow(1 + r, n);
+      const monthly = (P * x * r) / (x - 1);
+
+      amountText.innerText = P.toLocaleString('cs-CZ');
+      yearsText.innerText = yearsInput.value;
+      rateText.innerText = rateInput.value;
+      resultDisplay.innerText = Math.round(monthly).toLocaleString('cs-CZ') + ' Kč';
+    }
+
+    [amountInput, yearsInput, rateInput].forEach(input => {
+      input.addEventListener('input', calculate);
+    });
+
+    calculate(); // Prvotní výpočet
+  </script>
+</body>
+</html>
