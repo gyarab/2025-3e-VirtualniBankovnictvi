@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>Sandbox | Náš George</title>
+  <style>
+    body { font-family: sans-serif; background: radial-gradient(circle, #0044ff, #001144); color: white; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .card { background: rgba(255,255,255,0.15); backdrop-filter: blur(15px); padding: 45px; border-radius: 30px; width: 450px; border: 1px solid rgba(255,255,255,0.2); text-align: center; }
+    input[type=range] { width: 100%; accent-color: var(--george-bright); margin: 30px 0; cursor: pointer; }
+    .res { font-size: 50px; font-weight: 900; color: #00d9ff; text-shadow: 0 0 20px rgba(0,217,255,0.5); }
+    .btn-back { color: white; text-decoration: none; font-weight: bold; border: 1px solid white; padding: 8px 20px; border-radius: 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 style="margin-top:0;">Náš George | Kalkulačka</h2>
+    <p>Kolik potřebujete půjčit?</p>
+    <input type="range" min="10000" max="800000" value="200000" oninput="this.nextElementSibling.innerText = Number(this.value).toLocaleString() + ' Kč'; document.getElementById('res').innerText = Math.round(this.value/24).toLocaleString() + ' Kč'">
+    <div style="font-size: 1.5rem; font-weight: bold;">200 000 Kč</div>
+    <p style="margin-top:40px; opacity:0.8;">Měsíčně zaplatíte jen:</p>
+    <div class="res" id="res">8 333 Kč</div>
+    <div style="margin-top:40px;"><a href="virtualni_bankovnictvi.html" class="btn-back">ZPĚT NA LOGIN</a></div>
+  </div>
+</body>
+</html>
