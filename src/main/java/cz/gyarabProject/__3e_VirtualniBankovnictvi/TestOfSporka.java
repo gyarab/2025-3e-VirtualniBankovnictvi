@@ -31,7 +31,6 @@ public class TestOfSporka {
     public String logIn(HttpServletResponse response) throws IOException, InterruptedException {
         if (!token.isRefreshValid()) {
             String uri = auth2.authUri();
-            System.out.println(uri);
             response.sendRedirect(uri);
         }
         if (!token.isValid()) {

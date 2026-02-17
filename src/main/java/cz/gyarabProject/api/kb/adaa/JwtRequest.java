@@ -1,6 +1,5 @@
 package cz.gyarabProject.api.kb.adaa;
 
-import cz.gyarabProject.api.kb.datatype.Deployment;
 import cz.gyarabProject.api.kb.datatype.KeyHolder;
 import cz.gyarabProject.api.Property;
 import org.springframework.stereotype.Component;
@@ -19,6 +18,7 @@ public class JwtRequest {
     private final Property props;
     private final String separator;
     private final KeyHolder keyHolder;
+    private static final Property.Bank bank = Property.Bank.KB;
 
     public JwtRequest(HttpClient httpClient, Property props, KeyHolder keyHolder) {
         this.httpClient = httpClient;
@@ -36,7 +36,7 @@ public class JwtRequest {
      */
     public String getNewJwt() throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(getUri(keyHolder.getDeployment())));
+                .uri(getUri(keyHolder.getEnvironment()));
 
         builder.header("x-correlation-id", props.get("x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
@@ -50,18 +50,18 @@ public class JwtRequest {
     }
 
     /**
-     * Return URI as {@link String} to KB JWT generator based on which {@link Deployment} the request is.
+     * Return URI as {@link String} to KB JWT generator based on which {@link Property.Environment} the request is.
      *
-     * @param deployment {@link Deployment} where the URI goes.
+     * @param environment {@link Property.Environment} where the URI goes.
      * @return {@link String} that is URI for KB JWT generator.
      */
-    private String getUri(Deployment deployment) {
-        if (deployment == Deployment.SANDBOX) {
-            return props.getAbsolutePath("kb.uri.jwt.sandbox");
-        } else if (deployment == Deployment.PRODUCTION) {
-            return props.getAbsolutePath("kb.uri.jwt.production");
+    private URI getUri(Property.Environment environment) {
+        if (environment == Property.Environment.SANDBOX) {
+            return props.getUri(bank, Property.Environment.SANDBOX, "jwt");
+        } else if (environment == Property.Environment.PRODUCTION) {
+            return props.getUri(bank, Property.Environment.SANDBOX, "jwt");
         } else {
-            throw new IllegalStateException("Unsupported deployment type");
+            throw new IllegalStateException("Unsupported environment type");
         }
     }
 

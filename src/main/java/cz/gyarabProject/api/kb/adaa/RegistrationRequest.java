@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.kb.datatype.BankClientInfo;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
+import cz.gyarabProject.api.kb.datatype.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Map;
 
 import static cz.gyarabProject.api.Helper.*;
 
@@ -17,12 +19,16 @@ public class RegistrationRequest {
     private final Property props;
     private final String separator;
     private final ObjectMapper mapper;
+    private final KeyHolder keyHolder;
+    private static final Property.Bank bank = Property.Bank.KB;
 
     public RegistrationRequest(Property props,
-                               ObjectMappers mappers) {
+                               ObjectMappers mappers,
+                               KeyHolder keyHolder) {
         this.props = props;
         this.separator = props.get("array.separator", ", ");
         this.mapper = mappers.getMapper();
+        this.keyHolder = keyHolder;
     }
 
     /**
@@ -34,8 +40,8 @@ public class RegistrationRequest {
     public String getRegistration(String encryptionKey, String jwt) throws IOException {
         String jsonByte64 = new String(Base64.getEncoder().encode(getRequestJson(jwt, encryptionKey).getBytes()));
 
-        return props.getKbUri("oauth2") + "?registrationRequest="
-                + jsonByte64 + "&state=client123";
+        String query = props.buildQuery(Map.of("registrationRequest", jsonByte64, "state", "client123"));
+        return props.getUri(bank, Property.Environment.SANDBOX, "oauth2", query).toString();
     }
 
     /**
@@ -84,7 +90,7 @@ public class RegistrationRequest {
      */
     public BankClientInfo decryptResponse(String cipherText, String iv, String key) throws IOException {
         if (isNullOrEmpty(key)) {
-            key = readValidFile(props.getAbsolutePath("key-token.path", "api-key.path"));
+            key = keyHolder.getApi();
             key = new String(encodeBase64(key));
         }
         return mapper.readValue(ResponseDecryption.decrypt(cipherText, iv, key), BankClientInfo.class);

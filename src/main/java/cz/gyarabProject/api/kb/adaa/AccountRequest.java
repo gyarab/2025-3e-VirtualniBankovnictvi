@@ -7,7 +7,6 @@ import cz.gyarabProject.api.kb.datatype.*;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -18,6 +17,7 @@ public class AccountRequest {
     private final Property props;
     private final KeyHolder keyHolder;
     private final ObjectMapper mapper;
+    private static final Property.Bank bank = Property.Bank.KB;
 
     public AccountRequest(HttpClient httpClient,
                           Property props,
@@ -38,7 +38,9 @@ public class AccountRequest {
      * @throws InterruptedException When the request is interrupted.
      */
     public AccountInfo[] request(AccessToken token) throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(props.getAccountUri()));
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
+                props.getUri(bank, Property.Environment.SANDBOX, "account")
+        );
         builder.header("x-correlation-id", props.get("x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Content-Type", "application/json");

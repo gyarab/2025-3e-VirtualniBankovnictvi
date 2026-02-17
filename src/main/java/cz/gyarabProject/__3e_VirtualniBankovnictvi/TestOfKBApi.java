@@ -83,8 +83,7 @@ public class TestOfKBApi {
                 } else {
                     encryptionKey = generateEncryprionKey();
                 }
-                String url;
-                url = registrationRequest.getRegistration(encryptionKey, jwt);
+                String url = registrationRequest.getRegistration(encryptionKey, jwt);
                 response.sendRedirect(url);
             } else {
                 String key;

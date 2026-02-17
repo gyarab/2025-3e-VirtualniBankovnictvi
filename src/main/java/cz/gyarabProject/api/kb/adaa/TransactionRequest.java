@@ -12,12 +12,12 @@ import cz.gyarabProject.database.kb.entity.TransactionDto;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 import java.util.Iterator;
+import java.util.Map;
 
 @Component
 public class TransactionRequest {
@@ -25,6 +25,7 @@ public class TransactionRequest {
     private final Property props;
     private final KeyHolder keyHolder;
     private final ObjectMapper mapper;
+    private static final Property.Bank bank = Property.Bank.KB;
 
     public TransactionRequest(HttpClient httpClient, Property props, KeyHolder keyHolder, ObjectMappers mappers) {
         this.httpClient = httpClient;
@@ -46,9 +47,14 @@ public class TransactionRequest {
      */
     public Transaction[] getTransaction(String bankAccountId, AccessToken token, Instant from, Instant to) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
-        builder.uri(URI.create(
-                props.getTransactionUri(bankAccountId, from, to, 100, 0)
-        ));
+        String query = props.buildQuery(Map.of("account", bankAccountId,
+                "from", from,
+                "to", to,
+                "size", 100,
+                "page", 0)
+        );
+        builder.uri(props.getUri(bank, Property.Environment.SANDBOX, "account", query,
+                bankAccountId, "transactions"));
         builder.header("x-correlation-id", props.get("x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Authorization", token.getTypeToken());

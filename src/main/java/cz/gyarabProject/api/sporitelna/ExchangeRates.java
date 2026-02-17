@@ -10,19 +10,20 @@ import cz.gyarabProject.api.sporitelna.datatype.Language;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Component
 public class ExchangeRates {
     private final Property props;
     private final HttpClient client;
     private final ObjectMapper mapper;
-    private static final String uri = "/exchangerates/";
+    private static final String uriEnding = "exchangerates";
+    private static final Property.Bank bank = Property.Bank.SPORITELNA;
 
     public ExchangeRates(Property props, HttpClient client, ObjectMappers mappers) {
         this.props = props;
@@ -33,9 +34,14 @@ public class ExchangeRates {
     public ExchangeRate[] exchangeRates(LocalDate from, LocalDate to, String currency, Language lang,
                                       boolean card) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
-        String query = "?fromDate=" + from.toString() + "&toDate=" + to.toString() + "&curr="
-                + currency + "&lang=" + lang.name();
-        builder.uri(URI.create(props.get("exchange.sandbox") + uri + (card ? "/card" : "") + query));
+        String query = props.buildQuery(Map.of(
+                "fromDate", from,
+                "toDate", to,
+                "curr", currency,
+                "lang", lang
+        ));
+        builder.uri(props.getUri(bank, Property.Environment.SANDBOX,
+                "exchange", query, uriEnding, card ? "/card" : ""));
         builder.header("WEB-API-key", props.get("api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
@@ -44,7 +50,9 @@ public class ExchangeRates {
 
     public ExchangedCurrency exchange(String from, String to, String type, double amount,
                                       boolean buy) throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(props.get("exchange.sandbox") + uri));
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
+                props.getUriWithEnding(bank, Property.Environment.SANDBOX, "exchange", uriEnding)
+        );
         builder.header("Content-Type", "application/json;charset=UTF-8");
         builder.header("WEB-API-key", props.get("api.key"));
         builder.POST(HttpRequest.BodyPublishers.ofString(String.format("""
@@ -59,26 +67,38 @@ public class ExchangeRates {
                 to,
                 type,
                 amount,
-                buy)));
+                buy)
+        ));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
         return mapper.readValue(response.body(), ExchangedCurrency.class);
     }
 
     public Currency[] getCurrencies(Language lang, boolean card) throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(
-                props.get("exchange.sandbox") + uri + (card ? "card/" : "") + "currencies?lang=" + lang.name()));
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
+                props.getUri(bank, Property.Environment.SANDBOX, "exchange.sandbox",
+                        props.buildQuery(Map.of("lang", lang)),
+                        uriEnding, card ? "card" : "", "currencies"
+                )
+        );
         builder.header("WEB-API-key", props.get("api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
         return mapper.readValue(response.body(), Currency[].class);
     }
 
-    public ExchangeRate[] cross(LocalDate from, LocalDate to, String currFrom, String currTo) throws IOException, InterruptedException {
+    public ExchangeRate[] cross(LocalDate from, LocalDate to, String currFrom,
+                                String currTo) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
-        String query = "?fromDate=" + from.toString() + "&toDate=" + to.toString() + "&currency1="
-                + currFrom + "&currency2=" + currTo;
-        builder.uri(URI.create(props.get("exchange.sandbox") + uri + "cross" + query));
+        String query = props.buildQuery(Map.of(
+                "fromDate", from,
+                "toDate", to,
+                "currency1", currFrom,
+                "currency2", currTo
+        ));
+        builder.uri(props.getUri(
+                bank, Property.Environment.SANDBOX, "exchange", query, uriEnding, "cross"
+        ));
         builder.header("WEB-API-key", props.get("api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
@@ -86,8 +106,11 @@ public class ExchangeRates {
     }
 
     public LocalDateTime[] times(LocalDate date) throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(
-                props.get("exchange.sandbox") + uri + "times?date=" + date));
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
+                props.getUri(bank, Property.Environment.SANDBOX, "exchange",
+                        props.buildQuery(Map.of("date", date)), uriEnding, "times"
+                )
+        );
         builder.header("WEB-API-key", props.get("api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
@@ -95,8 +118,9 @@ public class ExchangeRates {
     }
 
     public boolean isAvailable() throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(
-                props.get("exchange.sandbox") + "/health"));
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
+                props.getUriWithEnding(bank, Property.Environment.SANDBOX, "exchange", "health")
+        );
         builder.header("WEB-API-key", props.get("api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());

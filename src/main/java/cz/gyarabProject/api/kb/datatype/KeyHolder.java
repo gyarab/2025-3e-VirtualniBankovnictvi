@@ -1,6 +1,7 @@
 package cz.gyarabProject.api.kb.datatype;
 
 import cz.gyarabProject.api.Helper;
+import cz.gyarabProject.api.Property;
 import org.springframework.stereotype.Component;
 
 //import java.io.Console;
@@ -17,7 +18,7 @@ public class KeyHolder {
     private final String contactRequestKeySandbox;
     private final String oAuth2KeySandbox;
 
-    private Deployment deployment;
+    private Property.Environment environment;
 
 //    public KeyHolder() {
 //        Console console = System.console();
@@ -39,39 +40,39 @@ public class KeyHolder {
         contactRequestKeySandbox = Helper.readValidFile("keys-tokens/contact-request-key-sandbox.txt");
         oAuth2KeySandbox = Helper.readValidFile("keys-tokens/oauth2-key-sandbox.txt");
 
-        deployment = Deployment.PRODUCTION;
+        environment = Property.Environment.PRODUCTION;
     }
 
     public String getApi() {
-        return deployment == Deployment.SANDBOX ? apiKeySandbox : apiKey;
+        return environment == Property.Environment.SANDBOX ? apiKeySandbox : apiKey;
     }
 
     public String getClientRegistrationKey() {
-        return deployment == Deployment.SANDBOX ? clientRegistrationKeySandbox : clientRegistrationKey;
+        return environment == Property.Environment.SANDBOX ? clientRegistrationKeySandbox : clientRegistrationKey;
     }
 
     public String getOAuth2Key() {
-        return deployment == Deployment.SANDBOX ? clientRegistrationKeySandbox : oAuth2Key;
+        return environment == Property.Environment.SANDBOX ? clientRegistrationKeySandbox : oAuth2Key;
     }
 
     public String getContactRequestKeySandbox() {
         return contactRequestKeySandbox;
     }
 
-    public void changeDeployment(Deployment deployment) {
-        this.deployment = deployment;
+    public void changeDeployment(Property.Environment deployment) {
+        this.environment = deployment;
     }
 
     public void switchToSandbox() {
-        deployment = Deployment.SANDBOX;
+        environment = Property.Environment.SANDBOX;
     }
 
     public void switchToProduction() {
-        deployment = Deployment.PRODUCTION;
+        environment = Property.Environment.PRODUCTION;
     }
 
-    public Deployment getDeployment() {
-        return deployment;
+    public Property.Environment getEnvironment() {
+        return environment;
     }
 
     @Override

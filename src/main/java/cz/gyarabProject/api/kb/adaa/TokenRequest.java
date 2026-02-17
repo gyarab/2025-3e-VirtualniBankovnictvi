@@ -8,18 +8,19 @@ import cz.gyarabProject.api.kb.datatype.*;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Map;
 
 @Component
 public class TokenRequest {
     private final Property props;
     private final KeyHolder keyHolder;
     private final ObjectMapper mapper;
+    private static final Property.Bank bank = Property.Bank.KB;
 
     public TokenRequest(Property props,
                         KeyHolder keyHolder,
@@ -35,9 +36,13 @@ public class TokenRequest {
      * @return URL for getting a token.
      */
     public String getCode(String clientId, String redirectUrl) {
-        return props.getAbsolutePath("kb.login.uri") + "?response_type=code&client_id=" + clientId + "&redirect_uri=" +
-                redirectUrl +
-                "&scope=" + props.get("scopes").replace(props.get("array.separator"), "%20");
+        String query = props.buildQuery(Map.of(
+                "response_type", "code",
+                "client_id", clientId,
+                "redirect_uri", redirectUrl,
+                "scope", props.get("scopes").replace(props.get("array.separator"), "%20"))
+        );
+        return props.getUri(bank, Property.Environment.SANDBOX, "login", query).toString();
     }
 
     /**
@@ -70,7 +75,7 @@ public class TokenRequest {
     private RefreshToken getToken(String redirectUrl, String codeOrToken, BankClientInfo client, String grandType, RefreshToken token)
             throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(props.getKbUri("token")));
+                .uri(props.getUri(bank, Property.Environment.SANDBOX, "token"));
 
         builder.header("x-correlation-id", props.get("x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());

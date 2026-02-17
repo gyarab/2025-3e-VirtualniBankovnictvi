@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 @RestController
 public class OAuth2 {
@@ -21,6 +21,7 @@ public class OAuth2 {
     private final Property props;
     private final HttpClient client;
     private final ObjectMapper mapper;
+    private static final Property.Bank bank = Property.Bank.SPORITELNA;
 
     public OAuth2(Token token, Property props, HttpClient client, ObjectMappers mappers) {
         this.token = token;
@@ -30,8 +31,14 @@ public class OAuth2 {
     }
 
     public String authUri() {
-        String uri = props.get("oauth2.uri.sandbox") + "/auth?redirect_uri=" + (props.get("uri.redirect")) +
-                "&client_id=" + props.get("client.id") + "&response_type=" + "code" + "&state=" + "RANDOM" + "&access_type=" + "offline";
+        String query = props.buildQuery(Map.of(
+                "redirect_uri", props.get("uri.redirect"),
+                "client_id", props.get("client.id"),
+                "response_type", "code",
+                "state", "RANDOM",
+                "access_type", "offline")
+        );
+        String uri = props.getUri(bank, Property.Environment.SANDBOX, "oauth2", query, "auth").toString();
         return uri;
     }
 
@@ -42,9 +49,6 @@ public class OAuth2 {
             @RequestParam(value="state") String state) throws IOException, InterruptedException {
         HttpRequest.Builder builder = getBuilder("code", code);
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-
-        System.out.println(builder.build().toString());
-        System.out.println(response.body());
 
         token.setAccess(mapper.readValue(response.body(), Token.AccessToken.class));
         token.setRefresh(mapper.readValue(response.body(), Token.RefreshToken.class));
@@ -63,23 +67,28 @@ public class OAuth2 {
     }
 
     private HttpRequest.Builder getBuilder(String name, String code) {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(props.get("oauth2.uri.sandbox") + "/token"));
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
+                props.getUriWithEnding(bank, Property.Environment.SANDBOX, "oauth2", "token"));
         builder.header("Content-Type", "application/x-www-form-urlencoded");
         builder.POST(getBody(name, code));
         return builder;
     }
 
     private HttpRequest.BodyPublisher getBody(String name, String code) {
-        String body = name + "=" + code + "&client_id=" + props.get("client.id") + "&client_secret=" +
-                props.get("client.secret") + "&grant_type=" +
-                (name.equals("code") ? "authorization_code&redirect_uri=" + props.get("uri.redirect"): name);
-
-        System.out.println(body);
+        String body = props.buildQuery(Map.of(name, code,
+                "client_id", props.get("client.id"),
+                "client_secret", props.get("client.secret"),
+                "grant_type", (name.equals("code") ?
+                        "authorization_code&redirect_uri=" + props.get("uri.redirect") : name)
+        ));
+        body.replace("?", "");
         return HttpRequest.BodyPublishers.ofString(body);
     }
 
     public void logout() throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(props.get("oauth2.uri.sandbox") + "/revokeext"));
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
+                props.getUriWithEnding(bank, Property.Environment.SANDBOX, "oauth2", "/revokeext")
+        );
         builder.header("Content-Type", "application/x-www-form-urlencoded");
         if (!token.isRefreshValid()) {
             return;

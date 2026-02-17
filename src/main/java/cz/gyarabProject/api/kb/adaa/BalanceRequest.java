@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -22,6 +21,7 @@ public class BalanceRequest {
     private final Property props;
     private final KeyHolder keyHolder;
     private final ObjectMapper mapper;
+    private static final Property.Bank bank = Property.Bank.KB;
 
     public BalanceRequest(HttpClient httpClient,
                           Property props,
@@ -44,7 +44,7 @@ public class BalanceRequest {
      */
     public Balance getBalance(String accountId, AccessToken accessToken) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
-        builder.uri(URI.create(props.getBalanceUri(accountId)));
+        builder.uri(props.getUriWithEnding(bank, Property.Environment.SANDBOX, "account", accountId, "balances"));
         builder.header("x-correlation-id", props.get("x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Authorization", accessToken.getTypeToken());

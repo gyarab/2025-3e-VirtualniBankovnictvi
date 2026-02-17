@@ -4,16 +4,22 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
-import java.util.HashMap;
+import java.net.URI;
 import java.util.Map;
 import java.util.Properties;
 
 @Component
 public class Property {
+    public enum Bank { SPORITELNA, KB }
+    public enum Environment { SANDBOX, PRODUCTION }
     private final static String propertiesPath = "./src/main/resources/";
     private final Properties props;
-    private final static String[] files = { "custom.properties", "sporitelna.properties", "sporitelna.secret.properties" /*,"kb.properties"*/ };
+    private final static String[] files = {
+            "custom.properties",
+            "sporitelna.properties",
+            "sporitelna.secret.properties" /*,
+            "kb.properties"*/ };
+
     public Property() {
         props = new Properties();
         for (String file : files) {
@@ -37,62 +43,56 @@ public class Property {
         return props.getProperty(key, defaultValue);
     }
 
-    /**
-     * Create a path like {@link String} from .properties velues from {@code keys}.
-     *
-     * @param keys for props to find them.
-     * @return path like {@link String} from props by keys.
-     */
-    public String getAbsolutePath(String... keys) {
-        StringBuilder path = new StringBuilder();
-        for (String key : keys) {
-            path.append(props.getProperty(key, ""));
+    private static String getUri(Properties props, String endpoint, Environment enviroment) {
+        var builder = new StringBuilder();
+        if (props.containsKey("uri")) {
+            builder.append(props.getProperty("uri"));
+        } else if (props.containsKey("uri." + enviroment.name().toLowerCase())) {
+            builder.append(props.containsKey("uri." + enviroment.name().toLowerCase()));
+        } else {
+            throw new RuntimeException("No uri in property");
         }
-        return path.toString();
+        String value = props.getProperty(endpoint);
+        if (value == null) {
+            value = props.getProperty(endpoint + "." + enviroment.name().toLowerCase());
+        }
+        if (value == null) {
+            throw new RuntimeException("Key " + endpoint + " is not in properties.");
+        }
+        if (value.contains("https://")) { return value; }
+        return builder.append(value).toString();
     }
 
-    public String getKbUri(String path) {
-        return getAbsolutePath("kb.uri", "kb.uri." + path);
+    public URI getUri(Bank bank, Environment environment, String endpoint, String query, String... uriEnding) {
+        StringBuilder ending = new StringBuilder();
+        for (var s : uriEnding) {
+            ending.append("/").append(s);
+        }
+        return switch (bank) {
+            case KB -> URI.create(getUri(props, endpoint, environment) + ending + query);
+            case SPORITELNA -> URI.create(getUri(props, endpoint, environment) + ending + query);
+            default -> throw new RuntimeException(bank.name() + " is not implemented.");
+        };
     }
 
-    public String getAccountUri() {
-        return getAbsolutePath("kb.uri", "kb.uri.account");
+    public URI getUriWithEnding(Bank bank, Environment environment, String endpoint, String... uriEnding) {
+        return getUri(bank, environment, endpoint, "", uriEnding);
     }
 
-    public String getBalanceUri(String accountId) {
-        return getUriWithAccount(accountId, "balances");
+    public URI getUri(Bank bank, Environment environment, String endpoint, String query) {
+        return getUri(bank, environment, endpoint, query, "");
     }
 
-    public String getSubscriptionUri(String accountId) {
-        return getUriWithAccount(accountId, "transactions/event-subscription");
+    public URI getUri(Bank bank, Environment environment, String endpoint) {
+        return getUri(bank, environment, endpoint, "", "");
     }
 
-    public String getNotificationUri(String accountId, String substrictionId) {
-        return getSubscriptionUri(accountId) + "/" + substrictionId;
-    }
-
-    public String getStatementUri(String accountId, Instant from) {
-        return getUriWithAccount(accountId, "statements") + "?dateFrom=" + from.toString();
-    }
-
-    public String getTransactionUri(String accountId, Instant from, Instant to, int size, int page) {
-        Map<String, String> map = new HashMap<>();
-        map.put("account", accountId);
-        map.put("from", from.toString());
-        map.put("to", to.toString());
-        map.put("size", Integer.toString(size));
-        map.put("page", Integer.toString(page));
-        return getUriWithAccount(accountId, "/transactions") + getQueryParam(map);
-    }
-
-    private String getUriWithAccount(String accountId, String type) {
-        return getAccountUri() + "/" + accountId + "/" + type;
-    }
-
-    private String getQueryParam(Map<String, String> map) {
+    public String buildQuery(Map<String, Object> map) {
         StringBuilder query = new StringBuilder("?");
-        map.forEach((k, v) -> query.append(k).append("=").append(v).append("&"));
-        query.deleteCharAt(query.length() - 1);
+        map.forEach((k, v) -> query.append(k).append("=").append(v.toString()).append("&"));
+        if (!query.isEmpty()) {
+            query.deleteCharAt(query.length() - 1);
+        }
         return query.toString();
     }
 }

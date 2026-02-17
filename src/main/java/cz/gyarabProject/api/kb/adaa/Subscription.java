@@ -6,7 +6,6 @@ import cz.gyarabProject.api.Property;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -18,6 +17,7 @@ public class Subscription {
     private final Property props;
     private final HttpClient client;
     private final KeyHolder keyHolder;
+    private static final Property.Bank bank = Property.Bank.KB;
 
     public Subscription(Property props,
                         HttpClient client,
@@ -44,7 +44,8 @@ public class Subscription {
 
     private String getRequest(String bankAccountId, AccessToken token, String key) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
-        builder.uri(URI.create(props.getSubscriptionUri(bankAccountId)));
+        builder.uri(props.getUriWithEnding(bank, Property.Environment.SANDBOX, "account",
+                bankAccountId, "transactions/event-subscription"));
 
         builder.header("x-correlation-id", props.get("x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
