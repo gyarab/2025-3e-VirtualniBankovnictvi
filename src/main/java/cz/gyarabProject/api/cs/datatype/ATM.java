@@ -1,6 +1,8 @@
-package cz.gyarabProject.api.sporitelna.datatype;
+package cz.gyarabProject.api.cs.datatype;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ATM(int id,
@@ -15,16 +17,18 @@ public record ATM(int id,
                   String postCode,
                   String region,
                   String country,
-                  Service[] services,
+                  List<Service> services,
+                  Opening openingHours,
                   String bankCode,
                   String accessType
                   ) {
     public record Location(double lat, double lng, String accuracy) {}
     public record Service(String type, String flag, String name, String desc) {}
-    public record Opening(String weekday, Interval[] intervals) {}
-    public record Interval(String from, String to) {}
+    public record Opening(String weekday, List<Interval> intervals) {
+        public record Interval(String from, String to) {}
+    }
 
 
-    public record Flag(Type[] types, Type[] services) {}
+    public record Flag(List<Type> types, List<Type> services) {}
     public record Type(String flag, String name, String desc) {}
 }

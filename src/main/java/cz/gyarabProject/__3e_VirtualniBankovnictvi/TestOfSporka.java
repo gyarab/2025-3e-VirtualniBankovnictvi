@@ -1,17 +1,16 @@
 package cz.gyarabProject.__3e_VirtualniBankovnictvi;
 
-import cz.gyarabProject.api.sporitelna.ExchangeRates;
-import cz.gyarabProject.api.sporitelna.OAuth2;
-import cz.gyarabProject.api.sporitelna.Places;
-import cz.gyarabProject.api.sporitelna.datatype.Language;
-import cz.gyarabProject.api.sporitelna.datatype.Token;
+import cz.gyarabProject.api.cs.ExchangeRates;
+import cz.gyarabProject.api.cs.OAuth2;
+import cz.gyarabProject.api.cs.Places;
+import cz.gyarabProject.api.cs.datatype.Language;
+import cz.gyarabProject.api.cs.datatype.Token;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
 
 @RestController
 public class TestOfSporka {
@@ -47,30 +46,29 @@ public class TestOfSporka {
 
     @GetMapping(value="sporitelna/exchangeRate")
     public String exchangeRate() throws IOException, InterruptedException {
-        return Arrays.toString(rates.exchangeRates(LocalDate.parse("2015-03-22"), LocalDate.parse("2015-03-23"),
-                "USD", Language.cs, false));
+        return rates.exchangeRates(LocalDate.parse("2015-03-22"), LocalDate.parse("2015-03-23"),
+                "USD", Language.cs, false).toString();
     }
 
     @GetMapping(value="sporitelna/exchange")
     public String exchange() throws IOException, InterruptedException {
-        return rates.exchange("USD", "CZK",
-                "CASH", 1000, true).toString();
+        return rates.exchange("USD", "CZK", "CASH", 1000, true).toString();
     }
 
     @GetMapping(value="sporitelna/currencies")
     public String currencies() throws IOException, InterruptedException {
-        return Arrays.toString(rates.getCurrencies(Language.cs, false));
+        return rates.getCurrencies(Language.cs, false).toString();
     }
 
     @GetMapping(value="sporitelna/cross")
     public String cross() throws IOException, InterruptedException {
-        return Arrays.toString(rates.cross(LocalDate.parse("2015-03-22"), LocalDate.parse("2015-03-23"),
-                "CZK", "USD"));
+        return rates.cross(LocalDate.parse("2015-03-22"), LocalDate.parse("2015-03-23"),
+                "CZK", "USD").toString();
     }
 
     @GetMapping(value="sporitelna/times")
     public String times() throws IOException, InterruptedException {
-        return Arrays.toString(rates.times(LocalDate.parse("2015-03-22")));
+        return rates.times(LocalDate.parse("2015-03-22")).toString();
     }
 
     @GetMapping(value="sporitelna/health-check")

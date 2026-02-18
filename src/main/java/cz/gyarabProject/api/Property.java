@@ -10,14 +10,14 @@ import java.util.Properties;
 
 @Component
 public class Property {
-    public enum Bank { SPORITELNA, KB }
+    public enum Bank { CS, KB }
     public enum Environment { SANDBOX, PRODUCTION }
     private final static String propertiesPath = "./src/main/resources/";
     private final Properties props;
     private final static String[] files = {
             "custom.properties",
-            "sporitelna.properties",
-            "sporitelna.secret.properties" /*,
+            "cs.properties",
+            "cs.secret.properties" /*,
             "kb.properties"*/ };
 
     public Property() {
@@ -70,7 +70,7 @@ public class Property {
         }
         return switch (bank) {
             case KB -> URI.create(getUri(props, endpoint, environment) + ending + query);
-            case SPORITELNA -> URI.create(getUri(props, endpoint, environment) + ending + query);
+            case CS -> URI.create(getUri(props, endpoint, environment) + ending + query);
             default -> throw new RuntimeException(bank.name() + " is not implemented.");
         };
     }

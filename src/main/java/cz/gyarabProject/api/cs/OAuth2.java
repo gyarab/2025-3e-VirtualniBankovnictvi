@@ -1,9 +1,9 @@
-package cz.gyarabProject.api.sporitelna;
+package cz.gyarabProject.api.cs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
-import cz.gyarabProject.api.sporitelna.datatype.Token;
+import cz.gyarabProject.api.cs.datatype.Token;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +21,7 @@ public class OAuth2 {
     private final Property props;
     private final HttpClient client;
     private final ObjectMapper mapper;
-    private static final Property.Bank bank = Property.Bank.SPORITELNA;
+    private static final Property.Bank bank = Property.Bank.CS;
 
     public OAuth2(Token token, Property props, HttpClient client, ObjectMappers mappers) {
         this.token = token;

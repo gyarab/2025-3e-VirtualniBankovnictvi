@@ -1,4 +1,4 @@
-package cz.gyarabProject.api.sporitelna.datatype;
+package cz.gyarabProject.api.cs.datatype;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

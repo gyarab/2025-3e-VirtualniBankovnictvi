@@ -1,12 +1,12 @@
-package cz.gyarabProject.api.sporitelna;
+package cz.gyarabProject.api.cs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
-import cz.gyarabProject.api.sporitelna.datatype.ATM;
-import cz.gyarabProject.api.sporitelna.datatype.PageInfo;
-import cz.gyarabProject.api.sporitelna.datatype.Region;
+import cz.gyarabProject.api.cs.datatype.ATM;
+import cz.gyarabProject.api.cs.datatype.PageInfo;
+import cz.gyarabProject.api.cs.datatype.Region;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -16,6 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,7 +25,7 @@ public class Places {
     private final Property props;
     private final HttpClient client;
     private final ObjectMapper mapper;
-    private static final Property.Bank bank = Property.Bank.SPORITELNA;
+    private static final Property.Bank bank = Property.Bank.CS;
 
     public enum Detail {
         MINIMAL, NORMAL, FULL
@@ -43,9 +44,11 @@ public class Places {
         return client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
     }
 
-    public PageInfo<ATM> atms(String place, String lat1, String lat2, String lng1, String lng2, String radius,
-                              Region region, String country, String flag, String bankCode, int page, int size,
-                              String sort, Detail detail, LocalDate openTime) throws IOException, InterruptedException {
+    public PageInfo<ATM> atms(
+            String place, String lat1, String lat2, String lng1, String lng2, String radius, Region region,
+            String country, String flag, String bankCode, int page, int size, String sort, Detail detail,
+            LocalDate openTime
+    ) throws IOException, InterruptedException {
         URI uri;
         Map<String, Object> rawQuery = new HashMap<>(Map.of(
                 "radius", radius,
@@ -75,9 +78,10 @@ public class Places {
         return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
-    public PageInfo<ATM> atms(String place, String lat, String lng, String radius, Region region, String country,
-                              String flag, String bankCode, int page, int size, String sort, Detail detail,
-                              LocalDate openTime) throws IOException, InterruptedException {
+    public PageInfo<ATM> atms(
+            String place, String lat, String lng, String radius, Region region, String country, String flag,
+            String bankCode, int page, int size, String sort, Detail detail, LocalDate openTime
+    ) throws IOException, InterruptedException {
         return atms(place, lat, null, lng, null, radius, region, country, flag, bankCode,
                 page, size, sort, detail, openTime);
     }
@@ -91,13 +95,13 @@ public class Places {
         return mapper.readValue(response.body(), ATM.class);
     }
 
-    public String[] services(int id) throws IOException, InterruptedException {
+    public List<String> services(int id) throws IOException, InterruptedException {
         HttpResponse<String> response = send(
                 props.getUriWithEnding(bank, Property.Environment.SANDBOX, "atm",
                         "atms", Integer.toString(id), "services"
                 )
         );
-        return mapper.readValue(response.body(), String[].class);
+        return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
     public ATM.Flag flags() throws IOException, InterruptedException {

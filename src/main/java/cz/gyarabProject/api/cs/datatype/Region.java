@@ -1,4 +1,4 @@
-package cz.gyarabProject.api.sporitelna.datatype;
+package cz.gyarabProject.api.cs.datatype;
 
 public enum Region {
     Jihočeský_kraj, Jihomoravský_kraj, Karlovarský_kraj, Kraj_Vysočina, Královéhradecký_kraj, Liberecký_kraj,

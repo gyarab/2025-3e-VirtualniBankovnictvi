@@ -1,12 +1,13 @@
-package cz.gyarabProject.api.sporitelna;
+package cz.gyarabProject.api.cs;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
-import cz.gyarabProject.api.sporitelna.datatype.Currency;
-import cz.gyarabProject.api.sporitelna.datatype.ExchangeRate;
-import cz.gyarabProject.api.sporitelna.datatype.ExchangedCurrency;
-import cz.gyarabProject.api.sporitelna.datatype.Language;
+import cz.gyarabProject.api.cs.datatype.Currency;
+import cz.gyarabProject.api.cs.datatype.ExchangeRate;
+import cz.gyarabProject.api.cs.datatype.ExchangedCurrency;
+import cz.gyarabProject.api.cs.datatype.Language;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -23,7 +25,7 @@ public class ExchangeRates {
     private final HttpClient client;
     private final ObjectMapper mapper;
     private static final String uriEnding = "exchangerates";
-    private static final Property.Bank bank = Property.Bank.SPORITELNA;
+    private static final Property.Bank bank = Property.Bank.CS;
 
     public ExchangeRates(Property props, HttpClient client, ObjectMappers mappers) {
         this.props = props;
@@ -31,8 +33,8 @@ public class ExchangeRates {
         this.mapper = mappers.getMapper();
     }
 
-    public ExchangeRate[] exchangeRates(LocalDate from, LocalDate to, String currency, Language lang,
-                                      boolean card) throws IOException, InterruptedException {
+    public List<ExchangeRate> exchangeRates(LocalDate from, LocalDate to, String currency, Language lang,
+                                            boolean card) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         String query = props.buildQuery(Map.of(
                 "fromDate", from,
@@ -45,7 +47,7 @@ public class ExchangeRates {
         builder.header("WEB-API-key", props.get("api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-        return mapper.readValue(response.body(), ExchangeRate[].class);
+        return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
     public ExchangedCurrency exchange(String from, String to, String type, double amount,
@@ -74,7 +76,7 @@ public class ExchangeRates {
         return mapper.readValue(response.body(), ExchangedCurrency.class);
     }
 
-    public Currency[] getCurrencies(Language lang, boolean card) throws IOException, InterruptedException {
+    public List<Currency> getCurrencies(Language lang, boolean card) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
                 props.getUri(bank, Property.Environment.SANDBOX, "exchange.sandbox",
                         props.buildQuery(Map.of("lang", lang)),
@@ -84,10 +86,10 @@ public class ExchangeRates {
         builder.header("WEB-API-key", props.get("api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-        return mapper.readValue(response.body(), Currency[].class);
+        return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
-    public ExchangeRate[] cross(LocalDate from, LocalDate to, String currFrom,
+    public List<ExchangeRate> cross(LocalDate from, LocalDate to, String currFrom,
                                 String currTo) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         String query = props.buildQuery(Map.of(
@@ -102,10 +104,10 @@ public class ExchangeRates {
         builder.header("WEB-API-key", props.get("api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-        return mapper.readValue(response.body(), ExchangeRate[].class);
+        return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
-    public LocalDateTime[] times(LocalDate date) throws IOException, InterruptedException {
+    public List<LocalDateTime> times(LocalDate date) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
                 props.getUri(bank, Property.Environment.SANDBOX, "exchange",
                         props.buildQuery(Map.of("date", date)), uriEnding, "times"
@@ -114,7 +116,7 @@ public class ExchangeRates {
         builder.header("WEB-API-key", props.get("api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-        return mapper.treeToValue(mapper.readTree(response.body()).get("date"), LocalDateTime[].class);
+        return mapper.treeToValue(mapper.readTree(response.body()).get("date"), new TypeReference<>() {});
     }
 
     public boolean isAvailable() throws IOException, InterruptedException {

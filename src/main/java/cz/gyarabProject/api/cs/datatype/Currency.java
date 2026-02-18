@@ -1,4 +1,4 @@
-package cz.gyarabProject.api.sporitelna.datatype;
+package cz.gyarabProject.api.cs.datatype;
 
 public record Currency(String country,
                        String name,
