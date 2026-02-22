@@ -32,8 +32,8 @@ public class OAuth2 {
 
     public String authUri() {
         String query = props.buildQuery(Map.of(
-                "redirect_uri", props.get("uri.redirect"),
-                "client_id", props.get("client.id"),
+                "redirect_uri", props.get(bank, "uri.redirect"),
+                "client_id", props.get(bank, "client.id"),
                 "response_type", "code",
                 "state", "RANDOM",
                 "access_type", "offline")
@@ -76,10 +76,10 @@ public class OAuth2 {
 
     private HttpRequest.BodyPublisher getBody(String name, String code) {
         String body = props.buildQuery(Map.of(name, code,
-                "client_id", props.get("client.id"),
-                "client_secret", props.get("client.secret"),
+                "client_id", props.get(bank, "client.id"),
+                "client_secret", props.get(bank, "client.secret"),
                 "grant_type", (name.equals("code") ?
-                        "authorization_code&redirect_uri=" + props.get("uri.redirect") : name)
+                        "authorization_code&redirect_uri=" + props.get(bank, "uri.redirect") : name)
         ));
         body.replace("?", "");
         return HttpRequest.BodyPublishers.ofString(body);

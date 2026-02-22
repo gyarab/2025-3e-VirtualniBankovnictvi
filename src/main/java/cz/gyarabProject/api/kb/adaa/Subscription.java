@@ -47,7 +47,7 @@ public class Subscription {
         builder.uri(props.getUriWithEnding(bank, Property.Environment.SANDBOX, "account",
                 bankAccountId, "transactions/event-subscription"));
 
-        builder.header("x-correlation-id", props.get("x-correlation-id"));
+        builder.header("x-correlation-id", props.get(bank, "x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Authorization", token.getTypeToken());
 
@@ -69,7 +69,7 @@ public class Subscription {
                 "eventApiKey": "%s"
                 }
                 """,
-                props.get("subscription.uri"),
+                props.get(bank, "subscription.uri"),
                 key);
         if (!isValidJson(body))
         {

@@ -23,7 +23,7 @@ public class JwtRequest {
     public JwtRequest(HttpClient httpClient, Property props, KeyHolder keyHolder) {
         this.httpClient = httpClient;
         this.props = props;
-        this.separator = props.get("array.separator");
+        this.separator = props.get(bank, "array.separator");
         this.keyHolder = keyHolder;
     }
 
@@ -38,7 +38,7 @@ public class JwtRequest {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(getUri(keyHolder.getEnvironment()));
 
-        builder.header("x-correlation-id", props.get("x-correlation-id"));
+        builder.header("x-correlation-id", props.get(bank, "x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Content-Type", "application/json");
 

@@ -34,7 +34,7 @@ public class StatementRequest {
         String query = props.buildQuery(Map.of("fromDate", from));
         builder.uri(props.getUri(bank, Property.Environment.SANDBOX, "account", query,
                 bankAccountId, "statement"));
-        builder.header("x-correlation-id", props.get("x-correlation-id"));
+        builder.header("x-correlation-id", props.get(bank, "x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Authorization", token.getTypeToken());
 

@@ -44,7 +44,7 @@ public class ExchangeRates {
         ));
         builder.uri(props.getUri(bank, Property.Environment.SANDBOX,
                 "exchange", query, uriEnding, card ? "/card" : ""));
-        builder.header("WEB-API-key", props.get("api.key"));
+        builder.header("WEB-API-key", props.get(bank, "api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
         return mapper.readValue(response.body(), new TypeReference<>() {});
@@ -56,7 +56,7 @@ public class ExchangeRates {
                 props.getUriWithEnding(bank, Property.Environment.SANDBOX, "exchange", uriEnding)
         );
         builder.header("Content-Type", "application/json;charset=UTF-8");
-        builder.header("WEB-API-key", props.get("api.key"));
+        builder.header("WEB-API-key", props.get(bank, "api.key"));
         builder.POST(HttpRequest.BodyPublishers.ofString(String.format("""
                 {
                 "from": "%s",
@@ -83,7 +83,7 @@ public class ExchangeRates {
                         uriEnding, card ? "card" : "", "currencies"
                 )
         );
-        builder.header("WEB-API-key", props.get("api.key"));
+        builder.header("WEB-API-key", props.get(bank, "api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
         return mapper.readValue(response.body(), new TypeReference<>() {});
@@ -101,7 +101,7 @@ public class ExchangeRates {
         builder.uri(props.getUri(
                 bank, Property.Environment.SANDBOX, "exchange", query, uriEnding, "cross"
         ));
-        builder.header("WEB-API-key", props.get("api.key"));
+        builder.header("WEB-API-key", props.get(bank, "api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
         return mapper.readValue(response.body(), new TypeReference<>() {});
@@ -113,7 +113,7 @@ public class ExchangeRates {
                         props.buildQuery(Map.of("date", date)), uriEnding, "times"
                 )
         );
-        builder.header("WEB-API-key", props.get("api.key"));
+        builder.header("WEB-API-key", props.get(bank, "api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
         return mapper.treeToValue(mapper.readTree(response.body()).get("date"), new TypeReference<>() {});
@@ -123,7 +123,7 @@ public class ExchangeRates {
         HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
                 props.getUriWithEnding(bank, Property.Environment.SANDBOX, "exchange", "health")
         );
-        builder.header("WEB-API-key", props.get("api.key"));
+        builder.header("WEB-API-key", props.get(bank, "api.key"));
 
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
         return 200 <= response.statusCode() && response.statusCode() < 300;

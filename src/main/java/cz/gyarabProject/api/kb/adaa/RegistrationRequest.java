@@ -26,7 +26,7 @@ public class RegistrationRequest {
                                ObjectMappers mappers,
                                KeyHolder keyHolder) {
         this.props = props;
-        this.separator = props.get("array.separator", ", ");
+        this.separator = props.get(bank, "array.separator", ", ");
         this.mapper = mappers.getMapper();
         this.keyHolder = keyHolder;
     }
@@ -67,8 +67,8 @@ public class RegistrationRequest {
                 props.get("application.name"),
                 props.get("application.name.en"),
                 props.get("application.type"),
-                fromStringToArray(props.get("redirect.uri"), separator),
-                fromStringToArray(props.get("scopes"), separator),
+                fromStringToArray(props.get(bank, "redirect.uri"), separator),
+                fromStringToArray(props.get(bank, "scopes"), separator),
                 jwt,
                 encryptionKey
         );

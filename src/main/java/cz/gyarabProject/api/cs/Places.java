@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
+import cz.gyarabProject.api.cs.account.Sender;
 import cz.gyarabProject.api.cs.datatype.ATM;
 import cz.gyarabProject.api.cs.datatype.PageInfo;
 import cz.gyarabProject.api.cs.datatype.Region;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -21,9 +21,8 @@ import java.util.Map;
 
 
 @Component
-public class Places {
+public class Places extends Sender {
     private final Property props;
-    private final HttpClient client;
     private final ObjectMapper mapper;
     private static final Property.Bank bank = Property.Bank.CS;
 
@@ -32,16 +31,9 @@ public class Places {
     }
 
     public Places(Property props, HttpClient client, ObjectMappers mappers) {
+        super(props, client);
         this.props = props;
-        this.client = client;
         this.mapper = mappers.getMapper();
-    }
-
-    private HttpResponse<String> send(URI uri) throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(uri);
-        builder.header("WEB-API-key", props.get("api.key"));
-
-        return client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
     }
 
     public PageInfo<ATM> atms(
@@ -112,13 +104,11 @@ public class Places {
     }
 
     public String photos(int id) throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
+        HttpResponse<String> response = send(
                 props.getUriWithEnding(bank, Property.Environment.SANDBOX,
                         "atm", "atms", Integer.toString(id), "photos"
                 )
         );
-
-        HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
         return switch (response.statusCode() / 100) {
             case 5 -> "Sorry this is not Implemented yet from bank site.";
             case 2 -> "Sorry this is not implemented yet.";

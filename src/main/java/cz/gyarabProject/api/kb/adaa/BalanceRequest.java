@@ -45,7 +45,7 @@ public class BalanceRequest {
     public Balance getBalance(String accountId, AccessToken accessToken) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         builder.uri(props.getUriWithEnding(bank, Property.Environment.SANDBOX, "account", accountId, "balances"));
-        builder.header("x-correlation-id", props.get("x-correlation-id"));
+        builder.header("x-correlation-id", props.get(bank, "x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Authorization", accessToken.getTypeToken());
 

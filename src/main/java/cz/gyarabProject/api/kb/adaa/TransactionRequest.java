@@ -55,7 +55,7 @@ public class TransactionRequest {
         );
         builder.uri(props.getUri(bank, Property.Environment.SANDBOX, "account", query,
                 bankAccountId, "transactions"));
-        builder.header("x-correlation-id", props.get("x-correlation-id"));
+        builder.header("x-correlation-id", props.get(bank, "x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Authorization", token.getTypeToken());
 

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
@@ -13,34 +15,71 @@ public class Property {
     public enum Bank { CS, KB }
     public enum Environment { SANDBOX, PRODUCTION }
     private final static String propertiesPath = "./src/main/resources/";
-    private final Properties props;
-    private final static String[] files = {
-            "custom.properties",
-            "cs.properties",
-            "cs.secret.properties" /*,
-            "kb.properties"*/ };
+    private final Dictionary<String, Properties> props;
+    private final static String customPropsKey = "API";
+    private final static String[][] files = {
+            {
+                "custom.properties"
+            },
+            {
+                "cs.properties", "cs.secret.properties"
+            },
+            {
+                "kb.properties"
+            }
+    };
 
     public Property() {
-        props = new Properties();
-        for (String file : files) {
-            try (InputStream in = getClass().getClassLoader().getResourceAsStream(file)) {
-                props.load(in);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        props = new Hashtable<>();
+        for (int i = 0; i < files.length; i++) {
+            String key;
+            if (i == 0) {
+                key = customPropsKey;
+                props.put(key, new Properties());
+            } else {
+                key = Bank.values()[i - 1].name();
+                props.put(key, new Properties());
+            }
+            for (String file : files[i]) {
+                try (InputStream in = getClass().getClassLoader().getResourceAsStream(file)) {
+                    props.get(key).load(in);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
 
+    private Properties getProps(String prop) {
+        return props.get(prop);
+    }
+
     public Properties getProps() {
-        return props;
+        return getProps(customPropsKey);
+    }
+
+    public Properties getProps(Bank prop) {
+        return getProps(prop.name());
+    }
+
+    private String get(String prop, String key, String defaultValue) {
+        return props.get(key).getProperty(prop, defaultValue);
     }
 
     public String get(String key) {
-        return props.getProperty(key, "");
+        return get(customPropsKey, key, "");
     }
 
-    public String get(String key, String defaultValue) {
-        return props.getProperty(key, defaultValue);
+    public String get(Bank prop, String key) {
+        return get(prop.name(), key, "");
+    }
+
+    public String get(String key, String defalutValue) {
+        return get(customPropsKey, key, defalutValue);
+    }
+
+    public String get(Bank prop, String key, String defaultValue) {
+        return get(prop.name(), key, defaultValue);
     }
 
     private static String getUri(Properties props, String endpoint, Environment enviroment) {
@@ -68,11 +107,7 @@ public class Property {
         for (var s : uriEnding) {
             ending.append("/").append(s);
         }
-        return switch (bank) {
-            case KB -> URI.create(getUri(props, endpoint, environment) + ending + query);
-            case CS -> URI.create(getUri(props, endpoint, environment) + ending + query);
-            default -> throw new RuntimeException(bank.name() + " is not implemented.");
-        };
+        return URI.create(getUri(props.get(bank.name()), endpoint, environment) + ending + query);
     }
 
     public URI getUriWithEnding(Bank bank, Environment environment, String endpoint, String... uriEnding) {

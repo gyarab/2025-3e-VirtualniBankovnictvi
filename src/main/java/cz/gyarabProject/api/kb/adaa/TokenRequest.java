@@ -40,7 +40,7 @@ public class TokenRequest {
                 "response_type", "code",
                 "client_id", clientId,
                 "redirect_uri", redirectUrl,
-                "scope", props.get("scopes").replace(props.get("array.separator"), "%20"))
+                "scope", props.get(bank, "scopes").replace(props.get(bank, "array.separator"), "%20"))
         );
         return props.getUri(bank, Property.Environment.SANDBOX, "login", query).toString();
     }
@@ -77,7 +77,7 @@ public class TokenRequest {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(props.getUri(bank, Property.Environment.SANDBOX, "token"));
 
-        builder.header("x-correlation-id", props.get("x-correlation-id"));
+        builder.header("x-correlation-id", props.get(bank, "x-correlation-id"));
         builder.header("apiKey", keyHolder.getApi());
         builder.header("Content-Type", "application/x-www-form-urlencoded");
 

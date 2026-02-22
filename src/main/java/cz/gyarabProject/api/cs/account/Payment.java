@@ -11,32 +11,22 @@ import cz.gyarabProject.api.cs.datatype.Transaction;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 @Component
-public class Payment {
+public class Payment extends Sender {
     private final Property props;
-    private final HttpClient client;
     private final ObjectMapper mapper;
     private static final Property.Bank bank = Property.Bank.CS;
 
     public Payment(Property props, HttpClient client, ObjectMappers mappers) {
+        super(props, client);
         this.props = props;
-        this.client = client;
         this.mapper = mappers.getMapper();
-    }
-
-    private HttpResponse<String> send(URI uri) throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder(uri);
-        builder.header("WEB-API-key", props.get("api.key"));
-
-        return client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
     }
 
     public PageInfo<List<AccountInfo>> getAccountInfo(int size, int page, String sort, String order)
