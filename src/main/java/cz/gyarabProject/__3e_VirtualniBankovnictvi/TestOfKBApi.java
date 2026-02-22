@@ -3,7 +3,7 @@ package cz.gyarabProject.__3e_VirtualniBankovnictvi;
 import cz.gyarabProject.api.kb.adaa.*;
 import cz.gyarabProject.api.kb.datatype.BankClientInfo;
 import cz.gyarabProject.api.kb.datatype.Code;
-import cz.gyarabProject.api.kb.datatype.RefreshToken;
+import cz.gyarabProject.api.kb.datatype.token.RefreshToken;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

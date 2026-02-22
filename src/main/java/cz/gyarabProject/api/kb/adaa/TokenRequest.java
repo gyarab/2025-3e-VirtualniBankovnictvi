@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
 import cz.gyarabProject.api.kb.datatype.*;
+import cz.gyarabProject.api.kb.datatype.token.AccessToken;
+import cz.gyarabProject.api.kb.datatype.token.RefreshToken;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

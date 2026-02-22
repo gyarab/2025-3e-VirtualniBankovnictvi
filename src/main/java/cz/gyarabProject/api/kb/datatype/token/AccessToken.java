@@ -1,4 +1,4 @@
-package cz.gyarabProject.api.kb.datatype;
+package cz.gyarabProject.api.kb.datatype.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

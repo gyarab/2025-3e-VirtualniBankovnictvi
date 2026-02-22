@@ -1,6 +1,6 @@
 package cz.gyarabProject.api.kb.adaa;
 
-import cz.gyarabProject.api.kb.datatype.AccessToken;
+import cz.gyarabProject.api.kb.datatype.token.AccessToken;
 import cz.gyarabProject.api.kb.datatype.KeyHolder;
 import cz.gyarabProject.api.Property;
 import org.springframework.stereotype.Component;

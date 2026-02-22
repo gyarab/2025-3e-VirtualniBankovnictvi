@@ -3,7 +3,7 @@ package cz.gyarabProject.api.kb.adaa;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.gyarabProject.api.kb.datatype.AccessToken;
+import cz.gyarabProject.api.kb.datatype.token.AccessToken;
 import cz.gyarabProject.api.kb.datatype.KeyHolder;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;

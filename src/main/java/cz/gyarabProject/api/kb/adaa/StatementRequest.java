@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
 import cz.gyarabProject.api.kb.datatype.*;
+import cz.gyarabProject.api.kb.datatype.token.AccessToken;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
