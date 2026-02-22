@@ -1,4 +1,4 @@
-package cz.gyarabProject.api.cs.datatype;
+package cz.gyarabProject.api.cs.datatype.place;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

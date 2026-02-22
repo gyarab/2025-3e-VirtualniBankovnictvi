@@ -1,4 +1,4 @@
-package cz.gyarabProject.api.cs.datatype;
+package cz.gyarabProject.api.cs.datatype.statement;
 
 import java.time.LocalDate;
 

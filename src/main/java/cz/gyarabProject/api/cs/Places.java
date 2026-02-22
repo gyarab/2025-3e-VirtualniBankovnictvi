@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
 import cz.gyarabProject.api.cs.account.Sender;
-import cz.gyarabProject.api.cs.datatype.ATM;
+import cz.gyarabProject.api.cs.datatype.place.ATM;
 import cz.gyarabProject.api.cs.datatype.PageInfo;
 import cz.gyarabProject.api.cs.datatype.Region;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -24,14 +23,12 @@ import java.util.Map;
 public class Places extends Sender {
     private final Property props;
     private final ObjectMapper mapper;
-    private static final Property.Bank bank = Property.Bank.CS;
 
     public enum Detail {
         MINIMAL, NORMAL, FULL
     }
 
-    public Places(Property props, HttpClient client, ObjectMappers mappers) {
-        super(props, client);
+    public Places(Property props, ObjectMappers mappers) {
         this.props = props;
         this.mapper = mappers.getMapper();
     }
@@ -57,13 +54,13 @@ public class Places extends Sender {
         if (lat2 == null || lng2 == null) {
             rawQuery.putAll(Map.of("q", place, "lat", lat1, "lng", lng1));
             String query = props.buildQuery(rawQuery);
-            uri = props.getUri(bank, Property.Environment.SANDBOX, "atm", query, "atms");
+            uri = props.getUri(bank(), Property.Environment.SANDBOX, "atm", query, "atms");
         } else {
             rawQuery.putAll(
                     Map.of("q", place, "lat1", lat1, "lat2", lat2, "lng1", lng1, "lng2", lng2)
             );
             String query = props.buildQuery(rawQuery);
-            uri = props.getUri(bank, Property.Environment.SANDBOX, "atm", query, "atms", "within");
+            uri = props.getUri(bank(), Property.Environment.SANDBOX, "atm", query, "atms", "within");
         }
 
         HttpResponse<String> response = send(uri);
@@ -80,7 +77,7 @@ public class Places extends Sender {
 
     public ATM atms(int id) throws IOException, InterruptedException {
         HttpResponse<String> response = send(
-                props.getUriWithEnding(bank, Property.Environment.SANDBOX, "atm",
+                props.getUriWithEnding(bank(), Property.Environment.SANDBOX, "atm",
                         "atms", Integer.toString(id)
                 )
         );
@@ -89,7 +86,7 @@ public class Places extends Sender {
 
     public List<String> services(int id) throws IOException, InterruptedException {
         HttpResponse<String> response = send(
-                props.getUriWithEnding(bank, Property.Environment.SANDBOX, "atm",
+                props.getUriWithEnding(bank(), Property.Environment.SANDBOX, "atm",
                         "atms", Integer.toString(id), "services"
                 )
         );
@@ -98,14 +95,14 @@ public class Places extends Sender {
 
     public ATM.Flag flags() throws IOException, InterruptedException {
         HttpResponse<String> response = send(
-                props.getUriWithEnding(bank, Property.Environment.SANDBOX, "atm", "atms")
+                props.getUriWithEnding(bank(), Property.Environment.SANDBOX, "atm", "atms")
         );
         return mapper.readValue(response.body(), ATM.Flag.class);
     }
 
     public String photos(int id) throws IOException, InterruptedException {
         HttpResponse<String> response = send(
-                props.getUriWithEnding(bank, Property.Environment.SANDBOX,
+                props.getUriWithEnding(bank(), Property.Environment.SANDBOX,
                         "atm", "atms", Integer.toString(id), "photos"
                 )
         );

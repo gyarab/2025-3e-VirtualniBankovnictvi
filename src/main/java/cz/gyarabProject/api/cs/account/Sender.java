@@ -1,6 +1,8 @@
 package cz.gyarabProject.api.cs.account;
 
 import cz.gyarabProject.api.Property;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,15 +11,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
 
+@Component
 public class Sender {
-    private final Property props;
-    private final HttpClient client;
+    @Autowired
+    private Property props;
+    @Autowired
+    private HttpClient client;
     private static final Property.Bank bank = Property.Bank.CS;
-
-    public Sender(Property props, HttpClient client) {
-        this.props = props;
-        this.client = client;
-    }
 
     protected HttpResponse<String> send(URI uri, Map<String, String> headers) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
@@ -30,5 +30,9 @@ public class Sender {
 
     protected HttpResponse<String> send(URI uri) throws IOException, InterruptedException {
         return send(uri, Map.of());
+    }
+
+    protected Property.Bank bank() {
+        return bank;
     }
 }

@@ -5,22 +5,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
 import cz.gyarabProject.api.cs.datatype.PageInfo;
+import cz.gyarabProject.api.cs.datatype.statement.Statement;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.Map;
 
 @Component
-public class Statement extends Sender {
+public class Statements extends Sender {
     private final Property props;
     private final ObjectMapper mapper;
-    private static final Property.Bank bank = Property.Bank.CS;
 
-    public Statement(Property props, HttpClient client, ObjectMappers mappers) {
-        super(props, client);
+    public Statements(Property props, ObjectMappers mappers) {
         this.props = props;
         this.mapper = mappers.getMapper();
     }
@@ -36,7 +34,7 @@ public class Statement extends Sender {
                 "page", page
         ));
         HttpResponse<String> response = send(
-                props.getUri(bank, Property.Environment.SANDBOX, "account", query, id, "statements")
+                props.getUri(bank(), Property.Environment.SANDBOX, "account", query, id, "statements")
         );
         return mapper.readValue(response.body(), new TypeReference<>() {});
     }
@@ -44,7 +42,7 @@ public class Statement extends Sender {
     public String getDownloads(String id, String accountStatementId, String format) throws IOException, InterruptedException {
         String query = props.buildQuery(Map.of("format", format));
         HttpResponse<String> response = send(props.getUri(
-                bank, Property.Environment.SANDBOX, "account", query,
+                bank(), Property.Environment.SANDBOX, "account", query,
                 id, "statements", accountStatementId, "download"
         ));
         return response.body();

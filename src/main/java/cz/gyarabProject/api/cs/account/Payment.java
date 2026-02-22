@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
-import cz.gyarabProject.api.cs.datatype.AccountInfo;
-import cz.gyarabProject.api.cs.datatype.Balance;
+import cz.gyarabProject.api.cs.datatype.payment.AccountInfo;
+import cz.gyarabProject.api.cs.datatype.payment.Balance;
 import cz.gyarabProject.api.cs.datatype.PageInfo;
-import cz.gyarabProject.api.cs.datatype.Transaction;
+import cz.gyarabProject.api.cs.datatype.payment.Transaction;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,15 +21,13 @@ import java.util.Map;
 public class Payment extends Sender {
     private final Property props;
     private final ObjectMapper mapper;
-    private static final Property.Bank bank = Property.Bank.CS;
 
     public Payment(Property props, HttpClient client, ObjectMappers mappers) {
-        super(props, client);
         this.props = props;
         this.mapper = mappers.getMapper();
     }
 
-    public PageInfo<List<AccountInfo>> getAccountInfo(int size, int page, String sort, String order)
+    public PageInfo<AccountInfo> getAccountInfo(int size, int page, String sort, String order)
             throws IOException, InterruptedException {
         String query = props.buildQuery(Map.of(
                 "size", size,
@@ -38,7 +36,7 @@ public class Payment extends Sender {
                 "order", order
         ));
         HttpResponse<String> response = send(props.getUri(
-                bank, Property.Environment.SANDBOX, "account", query, "my", "accounts"
+                bank(), Property.Environment.SANDBOX, "account", query, "my", "accounts"
         ));
 
         return mapper.readValue(response.body(), new TypeReference<>() {});
@@ -47,7 +45,7 @@ public class Payment extends Sender {
     public List<Balance> getBalance(String id) throws IOException, InterruptedException {
         String query = props.buildQuery(Map.of("id", id));
         HttpResponse<String> response = send(
-                props.getUri(bank, Property.Environment.SANDBOX, "account", query,
+                props.getUri(bank(), Property.Environment.SANDBOX, "account", query,
                         "my", "accounts", id, "balance")
         );
 
@@ -67,7 +65,7 @@ public class Payment extends Sender {
                 "order", order
         ));
         HttpResponse<String> response = send(props.getUri(
-                bank, Property.Environment.SANDBOX, "account", query,
+                bank(), Property.Environment.SANDBOX, "account", query,
                 "my", "accounts", id, "transactions"
         ));
 

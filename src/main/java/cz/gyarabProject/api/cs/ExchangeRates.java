@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
-import cz.gyarabProject.api.cs.datatype.Currency;
-import cz.gyarabProject.api.cs.datatype.ExchangeRate;
-import cz.gyarabProject.api.cs.datatype.ExchangedCurrency;
+import cz.gyarabProject.api.cs.datatype.exchangeRates.Currency;
+import cz.gyarabProject.api.cs.datatype.exchangeRates.ExchangeRate;
+import cz.gyarabProject.api.cs.datatype.exchangeRates.ExchangedCurrency;
 import cz.gyarabProject.api.cs.datatype.Language;
 import org.springframework.stereotype.Component;
 
