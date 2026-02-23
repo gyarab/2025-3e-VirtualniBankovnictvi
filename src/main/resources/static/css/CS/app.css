@@ -1,0 +1,348 @@
+:root {
+    --primary: #0077c8;          /* moderní modrá */
+    --primary-dark: #005fa3;
+    --primary-light: #e6f3fb;
+
+    --success: #00875a;
+    --danger: #d93025;
+
+    --text: #111827;
+    --text-light: #6b7280;
+
+    --background: #ffffff;
+    --background-soft: #f3f6f9;
+    --background-muted: #f9fafb;
+
+    --border: #e5e7eb;
+
+    --radius: 16px;
+    --shadow-sm: 0 4px 14px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 28px rgba(0,0,0,0.08);
+
+    --transition: 0.25s ease;
+}
+
+/* ===== RESET ===== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+    background: var(--background-soft);
+    color: var(--text);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ===== KONTEJNER ===== */
+
+.container {
+    max-width: 1240px;
+    margin: auto;
+    padding: 0 28px;
+}
+
+/* ===== HEADER ===== */
+
+header {
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-inner {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--primary);
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text);
+    font-size: 15px;
+    margin-left: 32px;
+    font-weight: 500;
+    position: relative;
+    transition: var(--transition);
+}
+
+nav a:hover {
+    color: var(--primary);
+}
+
+/* ===== HLAVNÍ OBSAH ===== */
+
+main {
+    padding: 60px 0 90px 0;
+}
+
+/* ===== GRID ===== */
+
+.grid {
+    display: grid;
+    gap: 28px;
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-full {
+    grid-column: 1 / -1;
+}
+
+/* ===== KARTY ===== */
+
+.card {
+    background: var(--background);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    border: none;
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+}
+
+.card-value {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.card-subtext {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 10px;
+}
+
+/* ===== TLAČÍTKA ===== */
+
+.button {
+    display: inline-block;
+    padding: 13px 22px;
+    border-radius: 999px;   /* více zaoblené */
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.button-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.button-primary:hover {
+    background: var(--primary-dark);
+}
+
+.button-outline {
+    background: white;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+}
+
+.button-outline:hover {
+    background: var(--primary-light);
+}
+
+.button-block {
+    width: 100%;
+}
+
+/* ===== FORMULÁŘE ===== */
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    background: white;
+    transition: var(--transition);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,119,200,0.15);
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* ===== TABULKA TRANSAKCÍ ===== */
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-light);
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.table td {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+}
+
+.table tr:hover {
+    background: var(--background-muted);
+}
+
+.transaction-positive {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.transaction-negative {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* ===== BADGE / STATUS ===== */
+
+.badge {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 999px;
+    background: var(--background-muted);
+    font-weight: 500;
+}
+
+.badge-success {
+    background: rgba(0,135,90,0.1);
+    color: var(--success);
+}
+
+.badge-danger {
+    background: rgba(217,48,37,0.1);
+    color: var(--danger);
+}
+
+/* ===== RYCHLÉ AKCE ===== */
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ===== LOGIN OBRAZOVKA ===== */
+
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eaf4fb, #f7f9fc);
+}
+
+.login-box {
+    width: 420px;
+    background: white;
+    padding: 48px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+}
+
+.login-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 28px;
+}
+
+/* ===== FOOTER ===== */
+
+footer {
+    margin-top: 70px;
+    padding: 28px 0;
+    font-size: 14px;
+    color: var(--text-light);
+    text-align: center;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 1024px) {
+    .grid-3 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .header-inner {
+        flex-direction: column;
+        height: auto;
+        padding: 20px 0;
+    }
+
+    nav {
+        margin-top: 12px;
+    }
+
+    nav a {
+        margin-left: 18px;
+    }
+
+    .login-box {
+        width: 100%;
+        margin: 0 20px;
+    }
+}
