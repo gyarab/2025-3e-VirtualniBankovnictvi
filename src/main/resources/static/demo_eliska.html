@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo bankovnictví</title>
+    <link id="themeStylesheet" rel="stylesheet" href="css/KB/app.css">
+</head>
+<body>
+
+<header>
+    <div class="container header-inner">
+        <div class="logo">Moje banka</div>
+        <nav>
+            <a href="#">Účty</a>
+            <a href="#">Platby</a>
+            <a href="#">Karty</a>
+            <a href="#">Profil</a>
+            <a href="#" id="stylLink" onclick="toggleTheme(); return false;">
+                Přepnout na ČS
+            </a>
+        </nav>
+    </div>
+</header>
+
+<script>
+    function toggleTheme() {
+        const stylesheet = document.getElementById("themeStylesheet");
+        const stylLink = document.getElementById("stylLink");
+
+        if (stylesheet.getAttribute("href") === "css/KB/app.css") {
+            stylesheet.setAttribute("href", "css/CS/app.css");
+            stylLink.textContent = "Přepnout na KB";
+        } else {
+            stylesheet.setAttribute("href", "css/KB/app.css");
+            stylLink.textContent = "Přepnout na ČS";
+        }
+    }
+</script>
+
+<main>
+    <div class="container">
+
+        <div class="grid grid-3">
+
+            <div class="card">
+                <div class="card-title">Zůstatek na účtu</div>
+                <div class="card-value">124 580 Kč</div>
+                <div class="card-subtext">Aktualizováno dnes</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Disponibilní zůstatek</div>
+                <div class="card-value">119 340 Kč</div>
+                <div class="card-subtext">Po započtení blokací</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Rychlé akce</div>
+                <div class="actions">
+                    <button class="button button-primary button-block">Odeslat platbu</button>
+                    <button class="button button-outline button-block">Historie plateb</button>
+                </div>
+            </div>
+
+            <div class="card grid-full">
+                <div class="card-title">Poslední transakce</div>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Popis</th>
+                        <th>Částka</th>
+                        <th>Stav</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>22. 2. 2026</td>
+                        <td>Platba kartou – Alza.cz</td>
+                        <td class="transaction-negative">-1 240 Kč</td>
+                        <td><span class="badge">Zaúčtováno</span></td>
+                    </tr>
+
+                    <tr>
+                        <td>21. 2. 2026</td>
+                        <td>Příchozí platba</td>
+                        <td class="transaction-positive">+8 500 Kč</td>
+                        <td><span class="badge badge-success">Přijato</span></td>
+                    </tr>
+
+                    <tr>
+                        <td>20. 2. 2026</td>
+                        <td>Netflix</td>
+                        <td class="transaction-negative">-259 Kč</td>
+                        <td><span class="badge">Zaúčtováno</span></td>
+                    </tr>
+
+                    <tr>
+                        <td>18. 2. 2026</td>
+                        <td>Výplata</td>
+                        <td class="transaction-positive">+32 000 Kč</td>
+                        <td><span class="badge badge-success">Přijato</span></td>
+                    </tr>
+
+                    <tr>
+                        <td>15. 2. 2026</td>
+                        <td>Trvalý příkaz – Nájem</td>
+                        <td class="transaction-negative">-14 000 Kč</td>
+                        <td><span class="badge badge-danger">Odesláno</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer>
+    © 2026 Demo internetového bankovnictví
+</footer>
+
+</body>
+</html>
