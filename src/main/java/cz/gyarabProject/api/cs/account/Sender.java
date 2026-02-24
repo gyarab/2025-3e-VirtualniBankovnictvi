@@ -23,8 +23,8 @@ public class Sender {
     }
 
     protected HttpResponse<String> send(URI uri, Map<String, String> headers, Method method, JSONObject body) throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder();
-        builder.header("WEB-API-key", props.get(bank, "api-key"));
+        HttpRequest.Builder builder = HttpRequest.newBuilder(uri);
+        builder.header("WEB-API-key", props.get(bank, "api.key"));
         headers.forEach(builder::header); // Same as headers.forEach((k, v) -> builder.header(k, v));
 
         switch (method) {

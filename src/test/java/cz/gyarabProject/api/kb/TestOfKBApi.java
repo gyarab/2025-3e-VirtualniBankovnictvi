@@ -1,4 +1,4 @@
-package cz.gyarabProject.__3e_VirtualniBankovnictvi;
+package cz.gyarabProject.api.kb;
 
 import cz.gyarabProject.api.kb.adaa.*;
 import cz.gyarabProject.api.kb.datatype.BankClientInfo;

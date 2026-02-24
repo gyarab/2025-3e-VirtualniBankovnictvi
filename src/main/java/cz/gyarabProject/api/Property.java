@@ -63,7 +63,7 @@ public class Property {
     }
 
     private String get(String prop, String key, String defaultValue) {
-        return props.get(key).getProperty(prop, defaultValue);
+        return props.get(prop).getProperty(key, defaultValue);
     }
 
     public String get(String key) {
@@ -87,7 +87,7 @@ public class Property {
         if (props.containsKey("uri")) {
             builder.append(props.getProperty("uri"));
         } else if (props.containsKey("uri." + enviroment.name().toLowerCase())) {
-            builder.append(props.containsKey("uri." + enviroment.name().toLowerCase()));
+            builder.append(props.getProperty("uri." + enviroment.name().toLowerCase()));
         } else {
             throw new RuntimeException("No uri in property");
         }

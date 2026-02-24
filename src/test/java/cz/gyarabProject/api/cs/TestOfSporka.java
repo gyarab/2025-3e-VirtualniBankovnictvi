@@ -1,8 +1,5 @@
-package cz.gyarabProject.__3e_VirtualniBankovnictvi;
+package cz.gyarabProject.api.cs;
 
-import cz.gyarabProject.api.cs.ExchangeRates;
-import cz.gyarabProject.api.cs.OAuth2;
-import cz.gyarabProject.api.cs.Places;
 import cz.gyarabProject.api.cs.datatype.Language;
 import cz.gyarabProject.api.cs.datatype.Token;
 import jakarta.servlet.http.HttpServletResponse;

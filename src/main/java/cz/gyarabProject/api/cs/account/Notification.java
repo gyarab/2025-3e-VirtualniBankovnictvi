@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-public class PaymentNotification extends Sender {
+public class Notification extends Sender {
     private final Property props;
     private final ObjectMapper mapper;
     private static final String URL = "/sporitelna/payment/";
@@ -26,7 +26,7 @@ public class PaymentNotification extends Sender {
         card, account
     }
 
-    public PaymentNotification(Property props, ObjectMappers mappers) {
+    public Notification(Property props, ObjectMappers mappers) {
         this.props = props;
         this.mapper = mappers.getMapper();
     }
