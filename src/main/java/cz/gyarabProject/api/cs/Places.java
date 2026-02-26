@@ -63,7 +63,7 @@ public class Places extends Sender {
             uri = props.getUri(bank(), Property.Environment.SANDBOX, "atm", query, "atms", "within");
         }
 
-        HttpResponse<String> response = send(uri);
+        HttpResponse<String> response = send(uri, false);
         return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
@@ -79,7 +79,8 @@ public class Places extends Sender {
         HttpResponse<String> response = send(
                 props.getUriWithEnding(bank(), Property.Environment.SANDBOX, "atm",
                         "atms", Integer.toString(id)
-                )
+                ),
+                false
         );
         return mapper.readValue(response.body(), ATM.class);
     }
@@ -88,14 +89,16 @@ public class Places extends Sender {
         HttpResponse<String> response = send(
                 props.getUriWithEnding(bank(), Property.Environment.SANDBOX, "atm",
                         "atms", Integer.toString(id), "services"
-                )
+                ),
+                false
         );
         return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
     public ATM.Flag flags() throws IOException, InterruptedException {
         HttpResponse<String> response = send(
-                props.getUriWithEnding(bank(), Property.Environment.SANDBOX, "atm", "atms")
+                props.getUriWithEnding(bank(), Property.Environment.SANDBOX, "atm", "atms"),
+                false
         );
         return mapper.readValue(response.body(), ATM.Flag.class);
     }
@@ -104,7 +107,8 @@ public class Places extends Sender {
         HttpResponse<String> response = send(
                 props.getUriWithEnding(bank(), Property.Environment.SANDBOX,
                         "atm", "atms", Integer.toString(id), "photos"
-                )
+                ),
+                false
         );
         return switch (response.statusCode() / 100) {
             case 5 -> "Sorry this is not Implemented yet from bank site.";

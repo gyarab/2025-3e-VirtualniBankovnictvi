@@ -5,9 +5,7 @@ import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
 import cz.gyarabProject.api.cs.datatype.Token;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -30,29 +28,41 @@ public class OAuth2 {
         this.mapper = mappers.getMapper();
     }
 
-    public String authUri() {
+    public String authUri(String state) {
+        if (state == null) {
+            state = "";
+        }
         String query = props.buildQuery(Map.of(
                 "redirect_uri", props.get(bank, "uri.redirect"),
                 "client_id", props.get(bank, "client.id"),
                 "response_type", "code",
-                "state", "RANDOM",
+                "state", state,
                 "access_type", "offline")
         );
         String uri = props.getUri(bank, Property.Environment.SANDBOX, "oauth2", query, "auth").toString();
         return uri;
     }
 
-    @GetMapping(value="sporitelna_oauth_redirect")
+    public String authUri() {
+        return authUri("");
+    }
+
+    @GetMapping("/sporitelna_oauth_redirect")
     public void oauthRedirect(
             HttpServletResponse servletResponse,
             @RequestParam(value="code") String code,
-            @RequestParam(value="state") String state) throws IOException, InterruptedException {
+            @RequestParam(value="state") String state
+    ) throws IOException, InterruptedException {
         HttpRequest.Builder builder = getBuilder("code", code);
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
         token.setAccess(mapper.readValue(response.body(), Token.AccessToken.class));
         token.setRefresh(mapper.readValue(response.body(), Token.RefreshToken.class));
-        servletResponse.sendRedirect("http://localhost:8080/sporitelna");
+        if (state == null || state.isEmpty()) {
+            servletResponse.sendRedirect("http://localhost:8080/sporitelna");
+            return;
+        }
+        servletResponse.sendRedirect(state);
     }
 
     public void newAccessToken() throws IOException, InterruptedException {
@@ -70,19 +80,18 @@ public class OAuth2 {
         HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
                 props.getUriWithEnding(bank, Property.Environment.SANDBOX, "oauth2", "token"));
         builder.header("Content-Type", "application/x-www-form-urlencoded");
-        builder.POST(getBody(name, code));
+        builder.POST(HttpRequest.BodyPublishers.ofString(getBody(name, code)));
         return builder;
     }
 
-    private HttpRequest.BodyPublisher getBody(String name, String code) {
+    private String getBody(String name, String code) {
         String body = props.buildQuery(Map.of(name, code,
                 "client_id", props.get(bank, "client.id"),
                 "client_secret", props.get(bank, "client.secret"),
                 "grant_type", (name.equals("code") ?
                         "authorization_code&redirect_uri=" + props.get(bank, "uri.redirect") : name)
         ));
-        body.replace("?", "");
-        return HttpRequest.BodyPublishers.ofString(body);
+        return body.replaceFirst("\\?", "");
     }
 
     public void logout() throws IOException, InterruptedException {

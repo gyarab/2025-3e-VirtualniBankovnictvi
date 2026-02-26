@@ -13,7 +13,7 @@ public record AccountInfo (
         String nameI18N,
         String productI18N,
         List<String> ownersNames,
-        RelationShip relationShip,
+        Relationship relationship,
         SuitableScope suitableScope
 ) {
     public record Identification (
@@ -22,8 +22,9 @@ public record AccountInfo (
     public record Servicer (
             String bankCode, String countryCode, String bic
     ) {}
-    public record RelationShip (
+    public record Relationship(
             boolean isOwner
     ) {}
-    public record SuitableScope () {}
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record SuitableScope (String AISP, String PISP) {}
 }

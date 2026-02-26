@@ -10,7 +10,7 @@ public record PageInfo<T>(int pageNumber,
                           int pageCount,
                           int nextPage,
                           int pageSize,
-                          @JsonAlias({"accounts, items"})
+                          @JsonAlias({"accounts", "items"})
                           List<T> items) {
 }
 
