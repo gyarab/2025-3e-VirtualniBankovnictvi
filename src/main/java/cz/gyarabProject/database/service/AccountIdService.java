@@ -1,8 +1,10 @@
-package cz.gyarabProject.database.kb.service;
+package cz.gyarabProject.database.service;
 
-import cz.gyarabProject.database.kb.entity.AccountId;
-import cz.gyarabProject.database.kb.repository.AccountIdRepository;
+import cz.gyarabProject.database.entity.AccountId;
+import cz.gyarabProject.database.repository.AccountIdRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AccountIdService {
     private final AccountIdRepository accountId;
 

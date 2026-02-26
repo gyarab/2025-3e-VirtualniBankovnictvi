@@ -1,7 +1,14 @@
-package cz.gyarabProject.database.kb.entity;
+package cz.gyarabProject.database.entity;
 
+import cz.gyarabProject.api.cs.datatype.Token;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
+@Getter
+@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
@@ -14,6 +21,11 @@ public class User {
     private String username;
     @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
+    private String role;
+
+    @Transient
+    private final Token tokenCS = new Token();
 
     protected User() {}
 
@@ -21,8 +33,4 @@ public class User {
         this.username = username;
         this.password = password;
     }
-
-    public Long getId() { return id; }
-    public String getUsername() { return username; }
-    public String getPassword() { return password; }
 }

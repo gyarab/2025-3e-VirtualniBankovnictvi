@@ -2,24 +2,17 @@ package cz.gyarabProject.api.cs.datatype;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-@Component
+@Setter
 public class Token {
     private AccessToken access = null;
     private RefreshToken refresh = null;
 
-    public void setAccess(AccessToken token) {
-        this.access = token;
-    }
-
     public String getAccess() {
         if (access == null) return null;
         return access.token;
-    }
-
-    public void setRefresh(RefreshToken token) {
-        this.refresh = token;
     }
 
     public String getRefresh() {

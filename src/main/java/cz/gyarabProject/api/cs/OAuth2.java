@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
 import cz.gyarabProject.api.cs.datatype.Token;
+import cz.gyarabProject.database.repository.AccountIdRepository;
+import cz.gyarabProject.database.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,14 +17,14 @@ import java.util.Map;
 
 @RestController
 public class OAuth2 {
-    private final Token token;
+    private final UserRepository user;
     private final Property props;
     private final HttpClient client;
     private final ObjectMapper mapper;
     private static final Property.Bank bank = Property.Bank.CS;
 
-    public OAuth2(Token token, Property props, HttpClient client, ObjectMappers mappers) {
-        this.token = token;
+    public OAuth2(UserRepository user, Property props, HttpClient client, ObjectMappers mappers) {
+        this.user = user;
         this.props = props;
         this.client = client;
         this.mapper = mappers.getMapper();
@@ -56,24 +58,29 @@ public class OAuth2 {
         HttpRequest.Builder builder = getBuilder("code", code);
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
+        String[] states = state.split(" ");
+        Token token = user.getUserById(Long.parseLong(states[0])).getTokenCS();
+
         token.setAccess(mapper.readValue(response.body(), Token.AccessToken.class));
         token.setRefresh(mapper.readValue(response.body(), Token.RefreshToken.class));
-        if (state == null || state.isEmpty()) {
+        if (states.length == 1) {
             servletResponse.sendRedirect("http://localhost:8080/sporitelna");
             return;
         }
-        servletResponse.sendRedirect(state);
+        servletResponse.sendRedirect(states[1]);
     }
 
-    public void newAccessToken() throws IOException, InterruptedException {
+    public boolean newAccessToken(Long id) throws IOException, InterruptedException {
+        Token token = user.getUserById(id).getTokenCS();
         if (!token.isRefreshValid()) {
             token.setRefresh(null);
-            return;
+            return false;
         }
         HttpRequest.Builder builder = getBuilder("refresh_token", token.getRefresh());
         HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
         token.setAccess(mapper.readValue(response.body(), Token.AccessToken.class));
+        return true;
     }
 
     private HttpRequest.Builder getBuilder(String name, String code) {
@@ -94,7 +101,8 @@ public class OAuth2 {
         return body.replaceFirst("\\?", "");
     }
 
-    public void logout() throws IOException, InterruptedException {
+    public void logout(Long id) throws IOException, InterruptedException {
+        Token token = user.getUserById(id).getTokenCS();
         HttpRequest.Builder builder = HttpRequest.newBuilder().uri(
                 props.getUriWithEnding(bank, Property.Environment.SANDBOX, "oauth2", "/revokeext")
         );

@@ -1,11 +1,13 @@
 package cz.gyarabProject.database.kb.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.time.Instant;
 
+@Getter
 @Entity
 @Table(name = "transactions", indexes = {
         @Index(name = "transaction_booking_date_idx", columnList = "booking_date")
@@ -98,31 +100,4 @@ public class Transaction implements BigDecimalNormalizer {
         this.referencesReciever = builder.references.reciever;
         this.referencesDescription = builder.references.description;
     }
-
-    public Long getId() { return id; }
-    public String getBankAccountId() { return bankAccountId; }
-    public Instant getLastUpdated() { return lastUpdated; }
-    public String getaccountType() { return accountType; }
-    public String getEntryReference() { return entryReference; }
-    public String getIban() { return iban; }
-    public Integer getCreditDebitIndicator() { return creditDebitIndicator; }
-    public String getTransactionType() { return transactionType; }
-    public Date getBookingDate() { return bookingDate; }
-    public Date getValueDate() { return valueDate; }
-    public String getStatus() { return status; }
-    public String getAdditionalInfo() { return additionalInfo; }
-    public String getBankTransactionCode() { return bankTransactionCode; }
-    public String getBankTransactionIssuer() { return bankTransactionIssuer; }
-    public BigDecimal getAmountValue() { return amountValue; }
-    public String getAmountCurrency() { return amountCurrency; }
-    public BigDecimal getInstructedValue() { return instructedValue; }
-    public String getInstructedCurrency() { return instructedCurrency; }
-    public String getCounterPartyIban() { return counterPartyIban; }
-    public String getCounterPartyName() { return counterPartyName; }
-    public String getCounterPartyAccountNumber() { return counterPartyAccountNumber; }
-    public String getCounterPartyBankBic() { return counterPartyBankBic; }
-    public String getCounterPartyBankCode() { return counterPartyBankCode; }
-    public String getReferencesAccountServicer() { return referencesAccountServicer; }
-    public String getReferencesReciever() { return referencesReciever; }
-    public String getReferencesDescription() { return referencesDescription; }
 }

@@ -1,7 +1,10 @@
-package cz.gyarabProject.database.kb.entity;
+package cz.gyarabProject.database.entity;
 
+import cz.gyarabProject.api.cs.datatype.Token;
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "account_ids")
 public class AccountId {
@@ -15,14 +18,12 @@ public class AccountId {
     @Column(nullable = false, unique = true, name = "bank_account_id")
     private String bankAccountId;
 
-    protected AccountId() {}
+    protected AccountId() {
+    }
 
     public AccountId(Long userId, String bankAccountId) {
         this.userId = userId;
         this.bankAccountId = bankAccountId;
     }
 
-    public Long getId() { return id; }
-    public Long getUserId() { return userId; }
-    public String getBankAccountId() { return bankAccountId; }
 }

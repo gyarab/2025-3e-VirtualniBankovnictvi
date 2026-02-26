@@ -1,10 +1,13 @@
 package cz.gyarabProject.database.kb.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
+@Getter
 @Entity
 @Table(name = "balances")
 public class Balance implements BigDecimalNormalizer {
@@ -43,14 +46,4 @@ public class Balance implements BigDecimalNormalizer {
         this.creditLineValue = BigDecimalNormalizer.normalize(builder.creditLine.value);
         this.creditLineCurrency = builder.creditLine.currency;
     }
-
-    public Long getId() { return id; }
-    public String getBankAccountId() { return bankAccountId; }
-    public String getType() { return type; }
-    public String getCreditDebit() { return creditDebit; }
-    public BigDecimal getAmountValue() { return amountValue; }
-    public String getAmountCurrency() { return amountCurrency; }
-    public Instant getValidAt() { return validAt; }
-    public BigDecimal getCreditLineValue() { return creditLineValue; }
-    public String getCreditLineCurrency() { return creditLineCurrency; }
 }

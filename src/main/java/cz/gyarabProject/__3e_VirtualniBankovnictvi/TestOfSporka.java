@@ -6,8 +6,12 @@ import cz.gyarabProject.api.cs.Places;
 import cz.gyarabProject.api.cs.account.Payment;
 import cz.gyarabProject.api.cs.datatype.Language;
 import cz.gyarabProject.api.cs.datatype.Token;
+import cz.gyarabProject.database.entity.User;
+import cz.gyarabProject.database.repository.AccountIdRepository;
+import cz.gyarabProject.database.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,35 +22,39 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/test/sporitelna")
 public class TestOfSporka {
+    private final UserRepository user;
+    private final HttpSession session;
     private final OAuth2 oAuth2;
-    private final Token token;
     private final ExchangeRates rates;
     private final Places places;
     private final Payment payment;
 
-    public TestOfSporka(OAuth2 oAuth2, Token token, ExchangeRates rates, Places places, Payment payment) {
+    public TestOfSporka(
+            UserRepository user,
+            HttpSession session,
+            OAuth2 oAuth2,
+            ExchangeRates rates,
+            Places places,
+            Payment payment
+    ) {
+        this.user = user;
+        this.session = session;
         this.oAuth2 = oAuth2;
-        this.token = token;
         this.rates = rates;
         this.places = places;
         this.payment = payment;
     }
 
     @GetMapping(value="")
-    public String logIn(HttpServletResponse response, HttpServletRequest request) throws IOException, InterruptedException {
-        if (!token.isRefreshValid()) {
-            String uri = oAuth2.authUri(request.getRequestURL().toString());
-            response.sendRedirect(uri);
-        }
-        if (!token.isValid()) {
-            oAuth2.newAccessToken();
-        }
+    public String logIn(HttpServletResponse response, HttpServletRequest request) {
         return "<a href=\"http://localhost:8080/test/sporitelna/logout\">logout</a>";
     }
 
     @GetMapping(value="/logout")
     public String logout() throws IOException, InterruptedException {
-        oAuth2.logout();
+        Long id = (Long) session.getAttribute("userId");
+        oAuth2.logout(id);
+        Token token = user.getUserById(id).getTokenCS();
         return "Logout was successful!<br>Refresh token: " + token.getRefresh() + "<br>Access token: " + token.getAccess() +
                 "<br><a href=\"http://localhost:8080/test/sporitelna\"> new tokens</a>";
     }
