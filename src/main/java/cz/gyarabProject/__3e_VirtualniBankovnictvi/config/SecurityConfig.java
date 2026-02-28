@@ -1,4 +1,4 @@
-package cz.gyarabProject.config;
+package cz.gyarabProject.__3e_VirtualniBankovnictvi.config;
 
 import cz.gyarabProject.database.service.UserService;
 import org.springframework.context.annotation.Bean;

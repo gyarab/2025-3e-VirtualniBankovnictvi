@@ -93,11 +93,15 @@ public class TestOfSporka {
 
     @GetMapping(value="/atm")
     public String atmById() throws IOException, InterruptedException {
-        return places.atms(15).toString();
+        Long id = (Long) session.getAttribute("userId");
+        Token token = user.getUserById(id).getTokenCS();
+        return places.atms(15, token).toString();
     }
 
     @GetMapping(value = "/payment")
     public String payment() throws IOException, InterruptedException {
-        return payment.getAccountInfo(42, 2, "iban", "desc").toString();
+        Long id = (Long) session.getAttribute("userId");
+        Token token = user.getUserById(id).getTokenCS();
+        return payment.getAccountInfo(42, 2, "iban", "desc", token).toString();
     }
 }

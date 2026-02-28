@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
 import cz.gyarabProject.api.cs.datatype.PageInfo;
+import cz.gyarabProject.api.cs.datatype.Token;
 import cz.gyarabProject.api.cs.datatype.statement.Statement;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,7 @@ public class Statements extends Sender {
     }
 
     public PageInfo<Statement> getStatements(
-            String id, LocalDate from, LocalDate to, String format, int size, int page
+            String id, LocalDate from, LocalDate to, String format, int size, int page, Token token
     ) throws IOException, InterruptedException {
         String query = props.buildQuery(Map.of(
                 "fromDate", from,
@@ -34,17 +35,17 @@ public class Statements extends Sender {
                 "page", page
         ));
         HttpResponse<String> response = send(
-                props.getUri(bank(), Property.Environment.SANDBOX, "account", query, id, "statements")
+                props.getUri(bank(), Property.Environment.SANDBOX, "account", query, id, "statements"), token
         );
         return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
-    public String getDownloads(String id, String accountStatementId, String format) throws IOException, InterruptedException {
+    public String getDownloads(String id, String accountStatementId, String format, Token token) throws IOException, InterruptedException {
         String query = props.buildQuery(Map.of("format", format));
         HttpResponse<String> response = send(props.getUri(
                 bank(), Property.Environment.SANDBOX, "account", query,
-                id, "statements", accountStatementId, "download"
-        ));
+                id, "statements", accountStatementId, "download"), token
+        );
         return response.body();
     }
 }

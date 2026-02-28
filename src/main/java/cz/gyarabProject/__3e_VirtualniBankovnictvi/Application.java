@@ -15,8 +15,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "cz.gyarabProject.api",
         "cz.gyarabProject.database"
 })
-@EnableJpaRepositories("cz.gyarabProject.database.kb.repository")
-@EntityScan("cz.gyarabProject.database.kb.entity")
+@EnableJpaRepositories(basePackages = {"cz.gyarabProject.database.kb.repository", "cz.gyarabProject.database.repository"})
+@EntityScan(basePackages = {"cz.gyarabProject.database.kb.entity", "cz.gyarabProject.database.entity"})
 public class Application {
 
 	static void main(String[] args) {

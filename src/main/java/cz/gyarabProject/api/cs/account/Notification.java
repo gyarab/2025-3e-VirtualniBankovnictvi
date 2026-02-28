@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
+import cz.gyarabProject.api.cs.datatype.Token;
 import cz.gyarabProject.api.cs.datatype.notification.NotificationInfo;
 import cz.gyarabProject.api.cs.datatype.notification.Response;
 import org.json.JSONObject;
@@ -31,7 +32,7 @@ public class Notification extends Sender {
         this.mapper = mappers.getMapper();
     }
 
-    public NotificationInfo create(String id, Specification specification) throws IOException, InterruptedException {
+    public NotificationInfo create(String id, Specification specification, Token token) throws IOException, InterruptedException {
         HttpResponse<String> response = send(
                 props.getUriWithEnding(
                         bank(), Property.Environment.SANDBOX, "account",
@@ -42,26 +43,26 @@ public class Notification extends Sender {
                 new JSONObject().put(
                         "notificationUrl",
                         props.get("application.uri") + URL + specification.name() + "/transaction-notification"
-                )
+                ), token
         );
         return mapper.readValue(response.body(), NotificationInfo.class);
     }
 
-    public List<NotificationInfo> list(String id, Specification specification) throws IOException, InterruptedException {
+    public List<NotificationInfo> list(String id, Specification specification, Token token) throws IOException, InterruptedException {
         HttpResponse<String> response = send(props.getUriWithEnding(
                 bank(), Property.Environment.SANDBOX, "account",
-                "my", specification.name(), id, "notification"
-        ));
+                "my", specification.name(), id, "notification"), token
+        );
         JsonNode node = mapper.readTree(response.body());
         return mapper.treeToValue(node.get("notification"), new TypeReference<>() {});
     }
 
-    public void delete(String id, String notificationId, Specification specification) throws IOException, InterruptedException {
+    public void delete(String id, String notificationId, Specification specification, Token token) throws IOException, InterruptedException {
         HttpResponse<String> response = send(
                 props.getUriWithEnding(
                         bank(), Property.Environment.SANDBOX, "account",
                         "my", specification.name(), id, "notification", notificationId
-                )
+                ), token
         );
     }
 

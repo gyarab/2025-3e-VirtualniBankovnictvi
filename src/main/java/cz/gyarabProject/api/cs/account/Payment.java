@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.gyarabProject.api.ObjectMappers;
 import cz.gyarabProject.api.Property;
+import cz.gyarabProject.api.cs.datatype.Token;
 import cz.gyarabProject.api.cs.datatype.payment.AccountInfo;
 import cz.gyarabProject.api.cs.datatype.payment.Balance;
 import cz.gyarabProject.api.cs.datatype.PageInfo;
@@ -27,7 +28,7 @@ public class Payment extends Sender {
         this.mapper = mappers.getMapper();
     }
 
-    public PageInfo<AccountInfo> getAccountInfo(int size, int page, String sort, String order)
+    public PageInfo<AccountInfo> getAccountInfo(int size, int page, String sort, String order, Token token)
             throws IOException, InterruptedException {
         String query = props.buildQuery(Map.of(
                 "size", size,
@@ -36,24 +37,24 @@ public class Payment extends Sender {
                 "order", order
         ));
         HttpResponse<String> response = send(props.getUri(
-                bank(), Property.Environment.SANDBOX, "account", query, "my", "accounts"
-        ));
+                bank(), Property.Environment.SANDBOX, "account", query, "my", "accounts"), token
+        );
 
         return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
-    public List<Balance> getBalance(String id) throws IOException, InterruptedException {
+    public List<Balance> getBalance(String id, Token token) throws IOException, InterruptedException {
         String query = props.buildQuery(Map.of("id", id));
         HttpResponse<String> response = send(
                 props.getUri(bank(), Property.Environment.SANDBOX, "account", query,
-                        "my", "accounts", id, "balance")
+                        "my", "accounts", id, "balance"), token
         );
 
         return mapper.readValue(response.body(), new TypeReference<>() {});
     }
 
     public PageInfo<Transaction> getTransactions(
-            String id, LocalDate from, LocalDate to, int size, int page, String sort, String order
+            String id, LocalDate from, LocalDate to, int size, int page, String sort, String order, Token token
     ) throws IOException, InterruptedException {
         String query = props.buildQuery(Map.of(
                 "id", id,
@@ -66,8 +67,8 @@ public class Payment extends Sender {
         ));
         HttpResponse<String> response = send(props.getUri(
                 bank(), Property.Environment.SANDBOX, "account", query,
-                "my", "accounts", id, "transactions"
-        ));
+                "my", "accounts", id, "transactions"), token
+        );
 
         return mapper.readValue(response.body(), new TypeReference<>() {});
     }

@@ -17,7 +17,6 @@ import java.util.Map;
 public class Sender {
     @Autowired private Property props;
     @Autowired private HttpClient client;
-    @Autowired private Token token;
     private static final Property.Bank bank = Property.Bank.CS;
 
     public enum Method {
@@ -25,7 +24,7 @@ public class Sender {
     }
 
     protected HttpResponse<String> send(
-            URI uri, Map<String, String> headers, Method method, JSONObject body, boolean bearer
+            URI uri, Map<String, String> headers, Method method, JSONObject body, boolean bearer, Token token
     ) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder(uri);
         builder.header("WEB-API-key", props.get(bank, "api.key"));
@@ -56,21 +55,21 @@ public class Sender {
     }
 
     protected HttpResponse<String> send(
-            URI uri, Map<String, String> headers, Method method, JSONObject body
+            URI uri, Map<String, String> headers, Method method, JSONObject body, Token token
     ) throws IOException, InterruptedException {
-        return send(uri, headers, method, body, true);
+        return send(uri, headers, method, body, true, token);
     }
 
-    protected HttpResponse<String> send(URI uri, Map<String, String> headers) throws IOException, InterruptedException {
-        return send(uri, headers, Method.GET, null, true);
+    protected HttpResponse<String> send(URI uri, Map<String, String> headers, Token token) throws IOException, InterruptedException {
+        return send(uri, headers, Method.GET, null, true, token);
     }
 
-    protected HttpResponse<String> send(URI uri, boolean bearer) throws IOException, InterruptedException {
-        return send(uri, Map.of(), Method.GET, null, bearer);
+    protected HttpResponse<String> send(URI uri, boolean bearer, Token token) throws IOException, InterruptedException {
+        return send(uri, Map.of(), Method.GET, null, bearer, token);
     }
 
-    protected HttpResponse<String> send(URI uri) throws IOException, InterruptedException {
-        return send(uri, Map.of(), Method.GET, null, true);
+    protected HttpResponse<String> send(URI uri, Token token) throws IOException, InterruptedException {
+        return send(uri, Map.of(), Method.GET, null, true, token);
     }
 
     protected Property.Bank bank() {
