@@ -2,171 +2,168 @@
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
-  <title>Můj George | Účty</title>
+  <title>Můj George | Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root { --g-blue: #0044ff; --g-cyan: #00d9ff; --bg: #f4f7fa; }
-    body { margin: 0; font-family: "Segoe UI", sans-serif; background: var(--bg); }
-    nav { background: var(--g-blue); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
-
-    .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; }
-    .logo-circle { width: 30px; height: 30px; background: var(--g-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; border: 2px solid white; }
-
-    .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-
-    /* Přepínač účtů */
-    .account-tabs { display: flex; gap: 12px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; }
-    .tab {
-      background: white; padding: 18px 25px; border-radius: 18px; cursor: pointer;
-      font-weight: bold; color: #718096; transition: all 0.3s ease; border: 2px solid transparent;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05); min-width: 150px; text-align: center;
+    :root {
+      --g-blue: #1a56ff; --g-cyan: #00d9ff; --g-green: #2ecc71; --g-purple: #9b59b6; --bg: #f0f4f8;
     }
-    .tab.active { border-color: var(--g-blue); color: var(--g-blue); transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,68,255,0.15); }
-    .tab:hover:not(.active) { background: #fcfdfe; border-color: #e2e8f0; }
+    body { margin: 0; font-family: "Segoe UI", sans-serif; background: var(--bg); overflow-x: hidden; }
 
-    .card { background: white; border-radius: 24px; padding: 35px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-    .balance-label { font-size: 13px; color: #a0aec0; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-    .balance-value { font-size: 42px; font-weight: 900; color: var(--g-blue); margin: 12px 0; transition: all 0.4s ease; }
+    /* Horní navigace */
+    nav {
+      background: var(--g-blue); color: white; padding: 15px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo-container { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 20px; }
+    .logo-circle { width: 30px; height: 30px; background: var(--g-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; color: white; }
 
-    .chart-container { height: 380px; margin-top: 20px; }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .btn-schuzka {
+      background: rgba(255,255,255,0.2); color: white; text-decoration: none;
+      padding: 8px 20px; border-radius: 20px; font-weight: 600; transition: 0.3s;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .btn-schuzka:hover { background: white; color: var(--g-blue); }
+
+    .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+
+    /* Dashboard Grid - Fixní 3 sloupce */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      transition: all 0.5s ease-in-out;
+    }
+
+    .card {
+      background: white; border-radius: 24px; padding: 25px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05); cursor: pointer;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 260px; display: flex; flex-direction: column;
+      position: relative; border: 2px solid transparent;
+      overflow: hidden;
+    }
+
+    /* FOCUS REŽIM: Pouze pro JEDNU kartu najednou */
+    .card.active-focus {
+      grid-column: 1 / -1; /* Roztáhne se přes celou šířku (všechny 3 sloupce) */
+      height: 450px;
+      border-color: var(--g-blue);
+      box-shadow: 0 20px 40px rgba(26, 86, 255, 0.15);
+      cursor: default;
+    }
+
+    /* Ostatní karty se v mřížce pod zvětšenou kartou zmenší */
+    .dashboard-grid.has-focus .card:not(.active-focus) {
+      height: 140px;
+      opacity: 0.6;
+      transform: scale(0.96);
+    }
+
+    .acc-label { font-size: 11px; color: #a0aec0; text-transform: uppercase; font-weight: 800; }
+    .acc-balance { font-size: 26px; font-weight: 900; margin: 5px 0; }
+    .chart-box { flex-grow: 1; min-height: 0; margin-top: 10px; }
+
+    .hint { color: #718096; font-size: 13px; margin-bottom: 15px; }
   </style>
 </head>
 <body>
-  <nav>
-    <div class="logo-container">
-      <div class="logo-circle">G</div>
-      <div style="font-weight:700; font-size:22px;">George</div>
-    </div>
-    <div style="display:flex; gap:25px; align-items:center;">
-      <a href="schuzka.html" style="color:white; text-decoration:none; font-weight:600;">Sjednat schůzku</a>
-      <a href="odhlaseni.html" style="background:rgba(255,255,255,0.2); color:white; padding:10px 22px; border-radius:25px; text-decoration:none; font-weight:bold; border: 1px solid rgba(255,255,255,0.3);">Odhlásit</a>
-    </div>
-  </nav>
 
-  <div class="container">
-    <div class="account-tabs">
-      <div class="tab active" onclick="switchAccount('personal', this)">Osobní účet</div>
-      <div class="tab" onclick="switchAccount('savings', this)">Spořicí účet</div>
-      <div class="tab" onclick="switchAccount('investment', this)">Majetkový účet</div>
-    </div>
-
-    <div class="card">
-      <div class="balance-label" id="acc-name">Osobní účet</div>
-      <div class="balance-value" id="acc-balance">0,00 Kč</div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin-top:0; color:var(--g-blue); font-size: 20px;">Měsíční vývoj financí</h3>
-      <div class="chart-container">
-        <canvas id="georgeChart"></canvas>
-      </div>
-    </div>
+<nav>
+  <div class="logo-container">
+    <div class="logo-circle">G</div>
+    <span>George</span>
   </div>
+  <div class="nav-links">
+    <a href="schuzka.html" class="btn-schuzka">Sjednat schůzku</a>
+    <a href="odhlaseni.html" style="color:white; text-decoration:none; font-size: 14px;">Odhlásit</a>
+  </div>
+</nav>
 
-  <script>
-    let georgeChart;
+<div class="container">
+  <div class="hint">Klikněte na účet pro zvětšený detailní náhled</div>
 
-    // Lokální data pro plynulé přepínání (v prezentaci vypadají skvěle)
-    const accountData = {
-      personal: {
-        name: "Osobní účet",
-        balance: 145280.50,
-        history: [110500, 105200, 115800, 108400, 145280],
-        color: '#0044ff'
+  <div class="dashboard-grid" id="mainGrid">
+
+    <div class="card" onclick="focusCard(this, 'p')">
+      <div class="acc-label">Osobní účet</div>
+      <div class="acc-balance" style="color:var(--g-blue)">145 280 Kč</div>
+      <div class="chart-box"><canvas id="chartP"></canvas></div>
+    </div>
+
+    <div class="card" onclick="focusCard(this, 's')">
+      <div class="acc-label">Spořicí účet</div>
+      <div class="acc-balance" style="color:var(--g-green)">520 400 Kč</div>
+      <div class="chart-box"><canvas id="chartS"></canvas></div>
+    </div>
+
+    <div class="card" onclick="focusCard(this, 'i')">
+      <div class="acc-label">Majetkový účet</div>
+      <div class="acc-balance" style="color:var(--g-purple)">89 000 Kč</div>
+      <div class="chart-box"><canvas id="chartI"></canvas></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const charts = {};
+
+  function getConfig(data, color) {
+    return {
+      type: 'line',
+      data: {
+        labels: ['1.3.', '2.3.', '3.3.', '4.3.', '5.3.'],
+        datasets: [{
+          data: data,
+          borderColor: color,
+          backgroundColor: color + '15',
+          fill: true, tension: 0.4, borderWidth: 4, pointRadius: 5, pointHoverRadius: 10, pointBackgroundColor: '#fff', pointBorderWidth: 3
+        }]
       },
-      savings: {
-        name: "Spořicí účet",
-        balance: 520400.00,
-        history: [500000, 505000, 510000, 515000, 520400],
-        color: '#2ecc71'
-      },
-      investment: {
-        name: "Majetkový účet",
-        balance: 89000.20,
-        history: [75000, 92000, 81000, 85000, 89000],
-        color: '#9b59b6'
-      }
-    };
-
-    function initChart() {
-      const ctx = document.getElementById('georgeChart').getContext('2d');
-      georgeChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['Leden', 'Únor', 'Březen', 'Duben', 'Květen'],
-          datasets: [{
-            label: 'Zůstatek (Kč)',
-            data: accountData.personal.history,
-            borderColor: accountData.personal.color,
-            backgroundColor: 'rgba(0, 68, 255, 0.1)',
-            fill: true,
-            tension: 0.4,
-            borderWidth: 4,
-            pointRadius: 6,
-            pointBackgroundColor: '#fff',
-            pointBorderWidth: 3
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: {
-              beginAtZero: false,
-              grid: { color: '#f0f0f0' },
-              ticks: { callback: value => value.toLocaleString() + ' Kč' }
-            },
-            x: { grid: { display: false } }
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            enabled: true,
+            callbacks: { label: (ctx) => ` ${ctx.raw.toLocaleString()} Kč` }
           }
-        }
-      });
-    }
-
-    // Funkce pro přepínání účtů (Změní graf i texty bez načítání stránky)
-    function switchAccount(type, element) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      element.classList.add('active');
-
-      const data = accountData[type];
-
-      // Animace textu
-      document.getElementById('acc-name').innerText = data.name;
-      const balanceEl = document.getElementById('acc-balance');
-      balanceEl.innerText = new Intl.NumberFormat('cs-CZ').format(data.balance) + ' Kč';
-      balanceEl.style.color = data.color;
-
-      // Animace grafu
-      georgeChart.data.datasets[0].data = data.history;
-      georgeChart.data.datasets[0].borderColor = data.color;
-      georgeChart.data.datasets[0].backgroundColor = data.color + '1A'; // 10% průhlednost
-      georgeChart.update();
-    }
-
-    // Propojení s tvým Java Controllerem (GeorgeController.java)
-    async function loadApiData() {
-      try {
-        const response = await fetch('/api/george/dashboard', {
-          headers: { 'Authorization': 'Bearer ' + sessionStorage.getItem('token') }
-        });
-        const liveData = await response.json();
-
-        // Přepsání demo dat reálnými daty z Erste Sandboxu
-        accountData.personal.balance = liveData.balance;
-        accountData.personal.history = liveData.history;
-
-        // Zobrazení čerstvých dat
-        switchAccount('personal', document.querySelector('.tab.active'));
-      } catch (e) {
-        console.warn("API nedostupné, používám simulovaná data.");
-        switchAccount('personal', document.querySelector('.tab.active'));
+        },
+        scales: { x: { grid: { display: false } }, y: { display: false } }
       }
+    };
+  }
+
+  function focusCard(card, id) {
+    const grid = document.getElementById('mainGrid');
+    const isAlreadyActive = card.classList.contains('active-focus');
+
+    // KROK 1: Resetujeme všechny karty (vždy jen jedna může být focus)
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active-focus'));
+    grid.classList.remove('has-focus');
+
+    // KROK 2: Pokud karta nebyla aktivní, aktivujeme ji
+    if (!isAlreadyActive) {
+      card.classList.add('active-focus');
+      grid.classList.add('has-focus');
     }
 
-    window.onload = () => {
-      initChart();
-      loadApiData();
-    };
-  </script>
+    // KROK 3: Překreslení grafů do nových rozměrů s mírným zpožděním kvůli CSS animaci
+    setTimeout(() => {
+      Object.values(charts).forEach(c => c.resize());
+    }, 450);
+  }
+
+  window.onload = () => {
+    charts.p = new Chart(document.getElementById('chartP'), getConfig([142000, 148000, 141000, 146000, 145280], '#1a56ff'));
+    charts.s = new Chart(document.getElementById('chartS'), getConfig([510000, 512000, 515000, 518000, 520400], '#2ecc71'));
+    charts.i = new Chart(document.getElementById('chartI'), getConfig([75000, 92000, 81000, 85000, 89000], '#9b59b6'));
+  };
+</script>
+
 </body>
 </html>
