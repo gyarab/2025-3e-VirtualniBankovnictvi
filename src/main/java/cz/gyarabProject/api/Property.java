@@ -43,8 +43,8 @@ public class Property {
             for (String file : files[i]) {
                 try (InputStream in = getClass().getClassLoader().getResourceAsStream(file)) {
                     props.get(key).load(in);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(file, e);
                 }
             }
         }
