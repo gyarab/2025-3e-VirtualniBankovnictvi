@@ -14,7 +14,6 @@ import java.util.Properties;
 public class Property {
     public enum Bank { CS, KB }
     public enum Environment { SANDBOX, PRODUCTION }
-    private final static String propertiesPath = "./src/main/resources/";
     private final Dictionary<String, Properties> props;
     private final static String customPropsKey = "API";
     private final static String[][] files = {

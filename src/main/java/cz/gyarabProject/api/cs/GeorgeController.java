@@ -81,7 +81,7 @@ public class GeorgeController {
 
             // Volání tvé metody Places.atms()
             return places.atms(
-                    mesto, lat, lng, "5", Region.PRAHA, "CZ", null, null, 
+                    mesto, lat, lng, "5", Region.Hlavní_město_Praha, "CZ", null, null,
                     1, 10, null, Places.Detail.NORMAL, LocalDate.now(), token
             );
         } catch (Exception e) {
